@@ -359,7 +359,7 @@
 
         function render() {
             if (gameState.gameOver) return;
-            // Render Resources (unchanged)
+            // Render Resources
             resourcesGrid.innerHTML = '';
             for (const key in gameState.resources) {
                 const res = gameState.resources[key];
@@ -384,7 +384,7 @@
                     </div>
                 `;
             }
-            // Render Progress Bars (unchanged)
+            // Render Progress Bars
             progressBarsContainer.innerHTML = '';
             for (const key in gameState.progress) {
                 const prog = gameState.progress[key];
@@ -403,7 +403,7 @@
                     `;
                 }
             }
-            // Render Actions (unchanged, new Gambits included in array)
+            // Render Actions
             actionsContainer.innerHTML = '';
             gambits.forEach(gambit => {
                 if (gambit.condition === undefined || gambit.condition(gameState)) {
