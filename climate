@@ -1,0 +1,9 @@
+import numpy as np
+import matplotlib.pyplot as plt
+# Simulate ROI for climate fund
+investments = np.array([50, 30, 20])  # €M in Agriculture, Energy, Adaptation
+returns = np.array([0.08, 0.06, 0.04])  # Hypothetical annual returns
+roi = np.dot(investments, returns)
+plt.bar(['Agri', 'Energy', 'Adapt'], investments)
+plt.title(f'Fund ROI: €{roi:.2f}M')
+plt.show()
