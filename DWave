@@ -1,0 +1,7 @@
+from dwave.system import DWaveSampler, EmbeddingComposite
+import dimod
+# Define a simple QUBO problem (e.g., scheduling)
+Q = {(0, 0): -1, (1, 1): -1, (0, 1): 2}  # Example QUBO
+sampler = EmbeddingComposite(DWaveSampler())
+response = sampler.sample_qubo(Q, num_reads=100)
+print(response)
