@@ -11,6 +11,8 @@
             font-family: 'Roboto Mono', monospace;
             background-color: #0a0a1a;
             color: #e0e0e0;
+            background-image: url('https://your-server.com/mars_colony.jpg'); /* SuperGrok Mars colony image */
+            background-size: cover;
         }
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
@@ -66,6 +68,11 @@
             visibility: visible;
             opacity: 1;
         }
+        .gif-illustration {
+            width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -79,6 +86,8 @@
                 Operation: Das Goldene Zeitalter // RUNDE:
                 <span id="turn-counter">1</span>
             </p>
+            <!-- Illustration GIF for game (e.g., climate crisis animation) -->
+            <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
         </header>
         <!-- MAIN GRID -->
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -127,7 +136,7 @@
             </section>
         </main>
     </div>
-    <!-- MODAL FOR EVENTS/VICTORY -->
+    <!-- MODAL FOR EVENTS/VICTORY/LEVY LEGACY -->
     <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
         <div class="modal-content rounded-lg p-8 m-4 max-w-lg w-full shadow-2xl shadow-cyan-500/20">
             <h3 id="modal-title" class="font-orbitron text-2xl mb-4 text-cyan-300"></h3>
@@ -136,9 +145,23 @@
         </div>
     </div>
     <script>
+        // Levy Legacy Excerpts (summarized and integrated)
+        const levyLegacyText = [
+            "For a good part of my life, I read about the great booms and busts of history—the South Sea bubble, the tulip mania, the 1929 crash—but in the late 1990s, I knew my bubble had finally come. I’ve had two loves in my life: One is the stock market, the other psychology.",
+            "Nothing ever happens without people making decisions. Even the bubbles wouldn’t be worth talking about without discussing the psychology that drove them.",
+            "The moods of the market affect not only stock prices but also the fortunes of business. The Internet stock craze convinced me that there has never been a more important time to come to grips with what has happened to the markets.",
+            "One can only hope that with experience will come the ability to recognize those things that do not change, even as fashions come and go. I’m fond of the remark, attributed to Mark Twain, that 'history does not repeat itself, at best it sometimes rhymes.'",
+            "Markets affect investor psychology, but investor psychology also affects markets. Basically, we all live three lives: our life, the life of our parents, and that of our children.",
+            "Good times breed laxity, laxity breeds unreliable numbers, and ultimately, unreliable numbers bring about bad times. This simple rhythm of markets is as predictable as human avarice.",
+            "The message is that mood or investor psychology is as important to markets as is information. It requires tremendous discipline to apply this understanding to one’s behavior.",
+            "Why should the market be any more perfect than the very human emotions and calculations that drive it? Investors overreact, and so do markets. Investors get swept up in moods, and so do markets."
+        ];
+
         // --- GAME STATE INITIALIZATION ---
         let gameState = {
             turn: 1,
+            levyRounds: 0, // New: Tracks Levy Cycle rounds (more circles)
+            inLevyCycle: false, // New: Flag for multi-round Levy Legacy
             resources: {
                 kapital: { name: "Kapital (Mrd.)", value: 10, icon: '💰'},
                 daten: { name: "Datenströme (ZFlops)", value: 5, icon: '🌐'},
@@ -246,6 +269,34 @@
                     }
                 }, 
                 description: "Invest during potential crash for high returns using Levy Legacy. (Kosten: 20 Kapital)"
+            },
+            // New Realistic Gambit: Debt Crisis
+            { 
+                id: 'debt_crisis', name: 'Debt Crisis Gambit', 
+                cost: { kapital: 30 }, 
+                effect: { kapital: -15, hebel: 25 }, 
+                description: "Simulate USA debt crisis – reduces Capital but boosts Leverage for investments. (Kosten: 30 Kapital)"
+            },
+            // New Realistic Gambit: Evident Facts (No Green Washing)
+            { 
+                id: 'evident_facts', name: 'Evident Facts Gambit', 
+                cost: { legitimitaet: 5 }, 
+                effect: { legitimitaet: 15, kapital: 10 }, 
+                description: "Emphasize BIOSEAL facts to avoid greenwashing, boosting legitimacy and capital. (Kosten: 5 Legitimität)"
+            },
+            // New Realistic Gambit: Crypto Voucher Investment
+            { 
+                id: 'crypto_voucher', name: 'Crypto Voucher Investment', 
+                cost: { daten: 10 }, 
+                effect: { daten: 20, kapital: 15 }, 
+                description: "Invest in QR-Reg vouchers with Starlink/TESLA tech for high-speed communication. (Kosten: 10 Datenströme)"
+            },
+            // New Realistic Gambit: International Alliance (for Climate Crises)
+            { 
+                id: 'international_alliance', name: 'International Alliance Gambit', 
+                cost: { hebel: 10 }, 
+                effect: { progress: { klima: 15 } }, 
+                description: "Form alliances as nations can't shoulder climate crises alone. Boosts climate stabilization. (Kosten: 10 Hebel)"
             }
         ];
 
@@ -253,11 +304,14 @@
         const randomEvents = [
             {
                 title: "Markt-Crash (Levy-Zyklus)",
-                text: "Eine Spekulationsblase platzt. Die Märkte sind in Panik. Dein Verständnis für Psychologie gibt dir eine einzigartige Chance.",
+                text: "Eine Spekulationsblase platzt. Die Märkte sind in Panik. Dein Verständnis für Psychologie gibt dir eine einzigartige Chance. Levy Legacy Excerpt: 'Good times breed laxity, laxity breeds unreliable numbers...'",
                 effect: (state) => {
                     state.resources.kapital.value = Math.floor(state.resources.kapital.value * 0.7);
                     state.resources.hebel.value += 20;
-                    addLog("Markt-Crash! Kapital reduziert, aber dein 'Hebel' auf geschwächte Konkurrenten steigt.", "event");
+                    state.inLevyCycle = true; // Start multi-round Levy Cycle
+                    state.levyRounds = 3; // 3 rounds of cycle
+                    addLog("Markt-Crash! Kapital reduziert, aber dein 'Hebel' auf geschwächte Konkurrenten steigt. Entering Levy Rounds.", "event");
+                    showModal("Levy Legacy Cycle", levyLegacyText[Math.floor(Math.random() * levyLegacyText.length)]);
                 }
             },
             {
@@ -283,6 +337,16 @@
                     state.progress.github.value = Math.max(0, state.progress.github.value - 10);
                     addLog("Rückschlag bei GitHub! Deine Kontrolle wurde reduziert.", "warning");
                 }
+            },
+            // New Event: Climate Crisis
+            {
+                title: "Climate Crisis Event",
+                text: "A nation faces flooding/earthquake – one country can't shoulder the load alone. Levy Legacy Excerpt: 'No one has the excuse of claiming that there were no omens of impending disaster.'",
+                effect: (state) => {
+                    state.resources.kapital.value -= 20;
+                    addLog("Climate Crisis! Capital reduced – form international alliances to resolve.", "warning");
+                    showModal("Climate Crisis", "Nations can't handle crises alone. Use International Alliance Gambit.");
+                }
             }
         ];
 
@@ -295,7 +359,7 @@
 
         function render() {
             if (gameState.gameOver) return;
-            // Render Resources
+            // Render Resources (unchanged)
             resourcesGrid.innerHTML = '';
             for (const key in gameState.resources) {
                 const res = gameState.resources[key];
@@ -309,9 +373,8 @@
                     </div>
                 `;
             }
-            // Render Thera-Climafonds as a special resource if unlocked
             if (gameState.progress.theraFond.unlocked) {
-                 resourcesGrid.innerHTML += `
+                resourcesGrid.innerHTML += `
                     <div class="flex items-center space-x-2">
                         <span class="text-2xl">🏦</span>
                         <div>
@@ -321,12 +384,12 @@
                     </div>
                 `;
             }
-            // Render Progress Bars
+            // Render Progress Bars (unchanged)
             progressBarsContainer.innerHTML = '';
             for (const key in gameState.progress) {
                 const prog = gameState.progress[key];
                 if (key !== 'theraFond' && (prog.unlocked === undefined || prog.unlocked)) {
-                     progressBarsContainer.innerHTML +=`
+                    progressBarsContainer.innerHTML +=`
                         <div class="has-tooltip relative">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-sm">${prog.name}</span>
@@ -340,7 +403,7 @@
                     `;
                 }
             }
-            // Render Actions
+            // Render Actions (unchanged, new Gambits included in array)
             actionsContainer.innerHTML = '';
             gambits.forEach(gambit => {
                 if (gambit.condition === undefined || gambit.condition(gameState)) {
@@ -424,6 +487,16 @@
             // Passive resource generation (optional)
             gameState.resources.daten.value += 1;
             addLog("Passive Datenströme gesichert.", "info");
+            // Levy Rounds Cycle
+            if (gameState.inLevyCycle) {
+                gameState.levyRounds--;
+                addLog(`Levy Round ${3 - gameState.levyRounds}/3: Increased Leverage opportunity.`, "event");
+                gameState.resources.hebel.value += 5; // Bonus per round
+                if (gameState.levyRounds <= 0) {
+                    gameState.inLevyCycle = false;
+                    addLog("Levy Cycle ended. Back to normal operations.", "info");
+                }
+            }
             render();
         }
 
