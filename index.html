@@ -73,6 +73,21 @@
             max-height: 200px;
             margin-top: 10px;
         }
+        .flash-light {
+            animation: sos-flash 2s infinite;
+        }
+        @keyframes sos-flash {
+            0% { background-color: rgba(255, 255, 255, 0); }
+            10% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            20% { background-color: rgba(255, 255, 255, 0); }
+            30% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            40% { background-color: rgba(255, 255, 255, 0); }
+            50% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            60% { background-color: rgba(255, 255, 255, 0); }
+            70% { background-color: rgba(255, 255, 255, 1); } /* Long */
+            90% { background-color: rgba(255, 255, 255, 0); }
+            100% { background-color: rgba(255, 255, 255, 0); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -88,6 +103,8 @@
             </p>
             <!-- Illustration GIF for game (e.g., climate crisis animation) -->
             <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
+            <!-- SOS Morse Code Button -->
+            <button id="sos-button" class="action-button p-2 mt-4">Send SOS Signal (Light App Reaction)</button>
         </header>
         <!-- MAIN GRID -->
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -121,6 +138,10 @@
                     <div id="actions-container" class="space-y-3">
                         <!-- Action buttons will be injected here by JS -->
                     </div>
+                    <!-- MOVES GIF on Gambit click -->
+                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
+                    <!-- TWISTS GIF on Gambit click -->
+                    <img id="twists-gif" src="https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif" alt="TWISTS GIF" class="gif-illustration hidden">
                 </div>
             </section>
             <!-- RIGHT COLUMN: LOG & EVENTS -->
@@ -129,6 +150,8 @@
                     <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
                         Operations-Log
                     </h2>
+                    <!-- Looping Game Movie/GIF in Log -->
+                    <img src="https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif" alt="Game Loop GIF" class="gif-illustration">
                     <div id="log-container" class="h-96 overflow-y-auto pr-2 space-y-3">
                         <!-- Log entries will be injected here by JS -->
                     </div>
@@ -229,10 +252,14 @@
                 condition: (state) => state.progress.theraFond.value >= 100 && state.progress.klima.unlocked,
                 description: "Nutze den Fonds und Daten, um das Klima zu stabilisieren. (Kosten: 100 Fonds-Kapital, 20 Datenströme)"
             },
-            {
+             {
                 id: 'starte_mars_programm', name: 'Mars-Programm initiieren',
                 cost: { 'progress.theraFond': 250, hebel: 50 },
-                effect: (state) => { state.progress.mars.unlocked = true; state.progress.theraFond.value -= 250; addLog("Das Mars-Programm 'Goldenes Zeitalter' wurde gestartet!", "event"); },
+                effect: (state) => { 
+                    state.progress.mars.unlocked = true;
+                    state.progress.theraFond.value -= 250;
+                    addLog("Das Mars-Programm 'Goldenes Zeitalter' wurde gestartet!", "event");
+                },
                 condition: (state) => !state.progress.mars.unlocked && state.progress.theraFond.value >= 250 && state.progress.github.value >= 50,
                 description: "Nutze deinen Einfluss und dein Kapital, um die Kolonisierung des Mars vorzubereiten. (Benötigt 50% GitHub-Kontrolle)"
             },
@@ -299,7 +326,6 @@
                 description: "Form alliances as nations can't shoulder climate crises alone. Boosts climate stabilization. (Kosten: 10 Hebel)"
             }
         ];
-
         // --- RANDOM EVENTS DEFINITION ---
         const randomEvents = [
             {
@@ -435,7 +461,6 @@
             turnCounter.innerText = gameState.turn;
             checkVictory();
         }
-
         // --- GAME LOGIC FUNCTIONS ---
         function addLog(message, type = 'info') {
             const colorClasses = {
@@ -449,7 +474,6 @@
             logEntry.innerHTML = `<span class="font-bold">[Runde ${gameState.turn}]</span> ${message}`;
             logContainer.prepend(logEntry);
         }
-
         function executeGambit(id) {
             if (gameState.gameOver) return;
             const gambit = gambits.find(g => g.id === id);
@@ -469,13 +493,12 @@
                 gambit.effect(gameState);
             } else {
                 for (const key in gambit.effect) {
-                    gameState.resources[key].value += gambit.effect[key];
+                     gameState.resources[key].value += gambit.effect[key];
                 }
             }
             addLog(`Gambit ausgeführt: '${gambit.name}'.`, 'info');
             nextTurn();
         }
-
         function nextTurn() {
             gameState.turn++;
             // Random Event Logic
@@ -487,19 +510,8 @@
             // Passive resource generation (optional)
             gameState.resources.daten.value += 1;
             addLog("Passive Datenströme gesichert.", "info");
-            // Levy Rounds Cycle
-            if (gameState.inLevyCycle) {
-                gameState.levyRounds--;
-                addLog(`Levy Round ${3 - gameState.levyRounds}/3: Increased Leverage opportunity.`, "event");
-                gameState.resources.hebel.value += 5; // Bonus per round
-                if (gameState.levyRounds <= 0) {
-                    gameState.inLevyCycle = false;
-                    addLog("Levy Cycle ended. Back to normal operations.", "info");
-                }
-            }
             render();
         }
-
         function checkVictory() {
             const { klima, mars, ceres } = gameState.progress;
             if (klima.value >= klima.goal && !klima.missionComplete) {
@@ -512,8 +524,9 @@
                 showModal("PROJEKT 'ARES' ERFOLGREICH", "Die erste autarke Kolonie auf dem Mars ist Realität. Ein neuer Horizont für die Menschheit, gezeichnet von deiner Hand.");
                 addLog("SIEGESBEDINGUNG 2/3 ERREICHT: Mars-Kolonie.", "victory");
             }
-            // Ceres mission is not fully implemented as a gambit chain, but we check for it
+             // Ceres mission is not fully implemented as a gambit chain, but we check for it
             if (klima.missionComplete && mars.missionComplete) { // Simplified victory for now
+                // As Ceres is not implemented, let's make it an automatic win after the other two for demo purposes
                 if (!ceres.missionComplete) {
                     ceres.missionComplete = true; // Mark it as complete
                     showModal("PROJEKT 'ASTRAEUS' ERFOLGREICH", "Die Ceres-Bergbaumission wurde gestartet und sichert der Menschheit unendliche Ressourcen. Deine Vision ist vollständig verwirklicht.");
@@ -526,7 +539,6 @@
                 ), 2000);
             }
         }
-
         // --- MODAL CONTROLS ---
         const modal = document.getElementById('modal');
         const modalTitle = document.getElementById('modal-title');
@@ -542,7 +554,6 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         });
-
         // --- INITIALIZE GAME ---
         window.onload = () => {
             addLog("Willkommen, Direktor. Projekt Chimera ist aktiv. Deine Keimzelle: Der Rosary Think Tank. Dein Ziel: Das Goldene Zeitalter. Beginne mit der ersten Operation.", "event");
@@ -550,6 +561,6 @@
         };
     </script>
     ©®™ ROSARY 2025 ff
-    Be a SuperHero! -"CHIMMY"
+    Be a hero! -"CHIM"
 </body>
 </html>
