@@ -1,0 +1,6 @@
+// The entire request body
+{
+  "model": "grok-4",
+  "prompt": "A cat in a tree",
+  "n": 4
+}
