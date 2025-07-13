@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "data:image/jpeg;base64,<base64_image_string>",
+          "detail": "high"
+        },
+      },
+      {
+        "type": "text",
+        "text": "Describe what's in this image."
+      }
+    ]
+  }
+]
