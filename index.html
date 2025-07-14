@@ -207,4 +207,299 @@
             { id: 'letzter_aufstand', text: "EXT. RUINEN DER ALTEN WELT – TAG: Henry führt seine Anhänger... [Henry: 'Wir werden ihr Paradies in den Abgrund ziehen.']", gif: 'https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif', emoji: '⚔️', voiceText: 'Der Hochmut des Dunklen Herrn verblendet ihn. Wähle das Licht.' },
             { id: 'urteil_alpha', text: "INT. DAS NEUE BETHEL – THRONSAAL – TAG: PSPS II: 'Barmherzigkeit triumphiert, Liebe siegt.'", gif: 'https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif', emoji: '👼', voiceText: 'Barmherzigkeit triumphiert, Liebe siegt.' },
             { id: 'sternenschiffe_start', text: "Szene 2: Neues Jerusalem steigt herab. PSPS II: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.'", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🌟', voiceText: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.' },
-            { id: 'ceres_harmonie
+            { id: 'ceres_harmonie', text: "Finale Szene: Rachel aufersteht. 'Aus dem Reich des Planeten erhebe ich mich neu.'", gif: 'https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif', emoji: '🌹', voiceText: 'Aus dem Reich des Planeten erhebe ich mich neu.' }
+        ];
+
+        // --- GAMBITS (ACTIONS) DEFINITION ---
+        const gambits = [
+            // Bestehende Gambits (unverändert)
+            { id: 'studie', name: 'Wissenschaftliche Studie veröffentlichen', cost: { kapital: 1 }, effect: { legitimitaet: 5 }, description: "Stärkt dein Ansehen als seriöser Think Tank. (Kosten: 1 Mrd. Kapital)" },
+            { id: 'marktmanipulation', name: 'Marktmanipulation (Levy-Zyklus)', cost: { legitimitaet: 10 }, effect: { kapital: 20, hebel: 5 }, description: "Nutze Marktpsychologie, um Kapital zu generieren und 'Hebel' aufzubauen. Riskant für dein öffentliches Bild. (Kosten: 10 Legitimität)" },
+            { id: 'lobby', name: 'Lobby-Kampagne starten', cost: { kapital: 15 }, effect: { legitimitaet: -2, hebel: 10 }, description: "Übe politischen Einfluss aus, um deine Ziele durchzusetzen. (Kosten: 15 Mrd. Kapital)" },
+            { id: 'startup_kauf', name: 'Startups auf GitHub akquirieren', cost: { kapital: 10 }, effect: (state) => { state.progress.github.value += 5; state.resources.daten.value += 2; }, description: "Erhöhe deine Kontrolle über GitHub und sammle wertvolle Daten. (Kosten: 10 Mrd. Kapital)" },
+            { id: 'gruende_fonds', name: 'Thera-Climafonds gründen', cost: { kapital: 100, legitimitaet: 10 }, effect: (state) => { state.progress.theraFond.unlocked = true; state.progress.klima.unlocked = true; addLog("Der Thera-Climafonds wurde gegründet! Neue strategische Optionen sind verfügbar.", "event"); }, condition: (state) => !state.progress.theraFond.unlocked && state.resources.legitimitaet.value >= 50, description: "Der Grundstein für dein Endspiel. Schaltet Klimaprojekte frei. (Kosten: 100 Mrd. Kapital, 10 Legitimität)" },
+            { id: 'investiere_fonds', name: 'In Thera-Climafonds investieren', cost: { kapital: 50 }, effect: (state) => { state.progress.theraFond.value += 50; state.resources.legitimitaet.value += 5; }, condition: (state) => state.progress.theraFond.unlocked, description: "Stärke deinen Fonds und deine Legitimität als Retter der Welt. (Kosten: 50 Mrd. Kapital)" },
+            { id: 'starte_geoengineering', name: 'Geo-Engineering Projekt starten', cost: { daten: 20, 'progress.theraFond': 100 }, effect: (state) => { state.progress.klima.value += 10; state.progress.theraFond.value -= 100; }, condition: (state) => state.progress.theraFond.value >= 100 && state.progress.klima.unlocked, description: "Nutze den Fonds und Daten, um das Klima zu stabilisieren. (Kosten: 100 Fonds-Kapital, 20 Datenströme)" },
+            { id: 'starte_mars_programm', name: 'Mars-Programm initiieren', cost: { 'progress.theraFond': 250, hebel: 50 }, effect: (state) => { state.progress.mars.unlocked = true; state.progress.theraFond.value -= 250; addLog("Das Mars-Programm 'Goldenes Zeitalter' wurde gestartet!", "event"); }, condition: (state) => !state.progress.mars.unlocked && state.progress.theraFond.value >= 250 && state.progress.github.value >= 50, description: "Nutze deinen Einfluss und dein Kapital, um die Kolonisierung des Mars vorzubereiten. (Benötigt 50% GitHub-Kontrolle)" },
+            { id: 'finanziere_mars_mission', name: 'Mars-Mission finanzieren', cost: { 'progress.theraFond': 100, daten: 50 }, effect: (state) => { state.progress.mars.value += 10; state.progress.theraFond.value -= 100; }, condition: (state) => state.progress.mars.unlocked && state.progress.theraFond.value >= 100, description: "Ein weiterer Schritt zur Besiedlung des roten Planeten. (Kosten: 100 Fonds-Kapital, 50 Datenströme)" },
+            { id: 'amazon_legacy', name: 'Amazon Legacy Gambit', cost: { legitimitaet: 10 }, effect: { legitimitaet: 20 }, description: "Boost legitimacy using Amazon Delta archaeology. (Kosten: 10 Legitimität)" },
+            { id: 'going_clay', name: 'Going Clay Gambit', cost: { kapital: 20 }, effect: (state) => { let crash_chance = Math.random(); if (crash_chance < 0.2) { let loss = state.resources.kapital.value * 0.3; let investment = state.resources.kapital.value * 0.2; let return_factor = 1 + (state.resources.hebel.value * 0.01 * 0.3); state.resources.kapital.value = state.resources.kapital.value - loss + (investment * return_factor); state.resources.hebel.value += (state.resources.kapital.value - loss) * 0.5; addLog("Crash triggered! Capital adjusted, but Leverage gained for 'investment when going clay'.", "warning"); } else { addLog("No crash this time. Standard investment applied.", "info"); state.resources.kapital.value += 10; } }, description: "Invest during potential crash for high returns using Levy Legacy. (Kosten: 20 Kapital)" },
+            { id: 'debt_crisis', name: 'Debt Crisis Gambit', cost: { kapital: 30 }, effect: { kapital: -15, hebel: 25 }, description: "Simulate USA debt crisis – reduces Capital but boosts Leverage for investments. (Kosten: 30 Kapital)" },
+            { id: 'evident_facts', name: 'Evident Facts Gambit', cost: { legitimitaet: 5 }, effect: { legitimitaet: 15, kapital: 10 }, description: "Emphasize BIOSEAL facts to avoid greenwashing, boosting legitimacy and capital. (Kosten: 5 Legitimität)" },
+            { id: 'crypto_voucher', name: 'Crypto Voucher Investment', cost: { daten: 10 }, effect: { daten: 20, kapital: 15 }, description: "Invest in QR-Reg vouchers with Starlink/TESLA tech for high-speed communication. (Kosten: 10 Datenströme)" },
+            { id: 'international_alliance', name: 'International Alliance Gambit', cost: { hebel: 10 }, effect: (state) => { state.progress.klima.value += 15; }, description: "Form alliances as nations can't shoulder climate crises alone. Boosts climate stabilization. (Kosten: 10 Hebel)" },
+            // Neue Gambits für Mars-Mission mit Drehbuch-Integration
+            { id: 'ruf_zum_handeln', name: 'Ruf zum Handeln starten', cost: { hebel: 20 }, effect: (state) => { state.progress.mars.value += 10; }, condition: (state) => state.progress.mars.unlocked, description: "Starte den Ruf zum Handeln (Akt 1). (Kosten: 20 Hebel)" },
+            { id: 'letzter_aufstand', name: 'Letzten Aufstand bekämpfen', cost: { kapital: 50 }, effect: (state) => { state.progress.mars.value += 15; if (Math.random() < 0.2) state.resources.legitimitaet.value -= 10; }, condition: (state) => state.progress.mars.value >= 50, description: "Bekämpfe den letzten Aufstand des Dunklen. (Kosten: 50 Kapital)" },
+            { id: 'urteil_alpha', name: 'Urteil des Alpha rufen', cost: { legitimitaet: 30 }, effect: (state) => { state.progress.mars.value += 20; state.progress.ceres.unlocked = true; Object.keys(state.resources).forEach(k => state.resources[k].value += 10); }, condition: (state) => state.progress.mars.value >= 75, description: "Rufe das Urteil des Alpha. (Kosten: 30 Legitimität)" },
+            { id: 'sternenschiffe_start', name: 'Sternenschiffe starten', cost: { daten: 50 }, effect: (state) => { state.progress.mars.value += 25; }, condition: (state) => state.progress.mars.value >= 90, description: "Starte die Sternenschiffe. (Kosten: 50 Datenströme)" },
+            { id: 'ceres_harmonie', name: 'Kosmische Harmonie herstellen', cost: { 'progress.mars': 200, hebel: 50 }, effect: (state) => { state.progress.ceres.value = 100; }, condition: (state) => state.progress.ceres.unlocked, description: "Herstelle kosmische Harmonie auf Ceres. (Kosten: 200 Mars-Fortschritt, 50 Hebel)" }
+        ];
+
+        // --- RANDOM EVENTS DEFINITION ---
+        const randomEvents = [
+            // Bestehende Events (unverändert)
+            { title: "Markt-Crash (Levy-Zyklus)", text: "Eine Spekulationsblase platzt. Die Märkte sind in Panik. Dein Verständnis für Psychologie gibt dir eine einzigartige Chance. Levy Legacy Excerpt: 'Good times breed laxity, laxity breeds unreliable numbers...'", effect: (state) => { state.resources.kapital.value = Math.floor(state.resources.kapital.value * 0.7); state.resources.hebel.value += 20; state.inLevyCycle = true; state.levyRounds = 3; addLog("Markt-Crash! Kapital reduziert, aber dein 'Hebel' auf geschwächte Konkurrenten steigt. Entering Levy Rounds.", "event"); showModal("Levy Legacy Cycle", levyLegacyText[Math.floor(Math.random() * levyLegacyText.length)]); } },
+            { title: "Technologischer Durchbruch", text: "Ein von dir finanziertes Startup erzielt einen Durchbruch in der KI-Forschung. Deine Datenverarbeitungskapazität steigt sprunghaft an.", effect: (state) => { state.resources.daten.value += 25; addLog("Technologischer Durchbruch! Datenströme signifikant erhöht.", "event"); } },
+            { title: "Politischer Skandal aufgedeckt", text: "Einer deiner Konkurrenten ist in einen massiven Korruptionsskandal verwickelt. Deine Organisation wirkt im Vergleich dazu wie ein Leuchtfeuer der Integrität.", effect: (state) => { state.resources.legitimitaet.value += 15; addLog("Politischer Skandal stärkt deine Legitimität.", "event"); } },
+            { title: "GitHub ändert die AGB", text: "GitHub verschärft seine Richtlinien. Deine Übernahmebemühungen werden erschwert.", effect: (state) => { state.progress.github.value = Math.max(0, state.progress.github.value - 10); addLog("Rückschlag bei GitHub! Deine Kontrolle wurde reduziert.", "warning"); } },
+            { title: "Climate Crisis Event", text: "A nation faces flooding/earthquake – one country can't shoulder the load alone. Levy Legacy Excerpt: 'No one has the excuse of claiming that there were no omens of impending disaster.'", effect: (state) => { state.resources.kapital.value -= 20; addLog("Climate Crisis! Capital reduced – form international alliances to resolve.", "warning"); showModal("Climate Crisis", "Nations can't handle crises alone. Use International Alliance Gambit."); } },
+            // Neue Mars-Events
+            { title: "Micrometeoroid-Schauer", text: "Dein Schiff wird beschädigt (Drehbuch: Hull breach!).", effect: (state) => { state.resources.kapital.value -= 30; addLog("Schauer trifft! 'Pressure loss – stabilize the ship!'", "warning"); showModal("Raum-Krise", "Nutze Dr. Pepper-Methode zur Lokalisierung? Opfere Ressourcen für Reparatur."); } },
+            { title: "Alien-Entdeckung", text: "Hologramm zeigt Mars-Geschichte (Drehbuch: 'Martians seeded Earth').", effect: (state) => { state.resources.hebel.value += 50; addLog("Entdeckung: 'The Cambrian explosion – we are them!'", "event"); } }
+        ];
+
+        // --- UI RENDERING FUNCTIONS ---
+        const resourcesGrid = document.getElementById('resources-grid');
+        const progressBarsContainer = document.getElementById('progress-bars');
+        const actionsContainer = document.getElementById('actions-container');
+        const logContainer = document.getElementById('log-container');
+        const turnCounter = document.getElementById('turn-counter');
+
+        function render() {
+            if (gameState.gameOver) return;
+            // Render Resources (unverändert)
+            resourcesGrid.innerHTML = '';
+            for (const key in gameState.resources) {
+                const res = gameState.resources[key];
+                resourcesGrid.innerHTML += `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">${res.icon}</span>
+                        <div>
+                            <div class="text-cyan-200">${res.name}</div>
+                            <div class="font-bold text-lg">${Math.round(res.value)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            if (gameState.progress.theraFond.unlocked) {
+                resourcesGrid.innerHTML += `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">🏦</span>
+                        <div>
+                            <div class="text-cyan-200">Thera-Fonds (Mrd.)</div>
+                            <div class="font-bold text-lg">${Math.round(gameState.progress.theraFond.value)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            // Render Progress Bars (unverändert)
+            progressBarsContainer.innerHTML = '';
+            for (const key in gameState.progress) {
+                const prog = gameState.progress[key];
+                if (key !== 'theraFond' && (prog.unlocked === undefined || prog.unlocked)) {
+                    progressBarsContainer.innerHTML += `
+                        <div class="has-tooltip relative">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm">${prog.name}</span>
+                                <span class="text-sm font-bold">${Math.min(100, Math.round((prog.value / prog.goal) * 100))}%</span>
+                            </div>
+                            <div class="w-full progress-bar-container rounded-full h-4">
+                                <div class="progress-bar h-4 rounded-full" style="width: ${Math.min(100, (prog.value / prog.goal) * 100)}%;"></div>
+                            </div>
+                            <div class="tooltip absolute z-10 w-64 p-2 -mt-20 ml-10 text-xs text-white bg-gray-800 border border-cyan-600 rounded-md shadow-lg">${prog.description}</div>
+                        </div>
+                    `;
+                }
+            }
+            // Render Actions (unverändert)
+            actionsContainer.innerHTML = '';
+            gambits.forEach(gambit => {
+                if (gambit.condition === undefined || gambit.condition(gameState)) {
+                    let canAfford = true;
+                    for (const key in gambit.cost) {
+                        let costValue = gambit.cost[key];
+                        let currentValue;
+                        if (key.startsWith('progress.')) {
+                            const progressKey = key.split('.')[1];
+                            currentValue = gameState.progress[progressKey].value;
+                        } else {
+                            currentValue = gameState.resources[key].value;
+                        }
+                        if (currentValue < costValue) {
+                            canAfford = false;
+                            break;
+                        }
+                    }
+                    actionsContainer.innerHTML += `
+                        <div class="has-tooltip relative">
+                            <button onclick="executeGambit('${gambit.id}')" ${!canAfford ? 'disabled' : ''} class="action-button w-full text-left p-3 rounded-lg text-sm">
+                                ${gambit.name}
+                            </button>
+                            <div class="tooltip absolute z-10 w-64 p-2 -mt-16 ml-10 text-xs text-white bg-gray-800 border border-cyan-600 rounded-md shadow-lg">${gambit.description}</div>
+                        </div>
+                    `;
+                }
+            });
+            turnCounter.innerText = gameState.turn;
+            checkVictory();
+        }
+
+        // --- GAME LOGIC FUNCTIONS ---
+        function addLog(message, type = 'info', isDynamic = false) {  // Überarbeitete Version mit isDynamic
+            const colorClasses = {
+                info: 'text-gray-300 border-cyan-500',
+                event: 'text-yellow-300 border-yellow-500',
+                warning: 'text-red-400 border-red-500',
+                victory: 'text-green-300 border-green-500 font-bold',
+                narrative: 'text-purple-300 border-purple-500'  // Neu für Drehbuch-Slots
+            };
+            if (isDynamic && drehbuchSlots.length > 0) {
+                const randomSlot = drehbuchSlots[Math.floor(Math.random() * drehbuchSlots.length)];
+                message += ` ${randomSlot.emoji} Echo aus dem Goldenen Zeitalter: "${randomSlot.text.substring(0, 50)}..."`;
+            }
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry p-2 text-sm ${colorClasses[type] || colorClasses.info}`;
+            logEntry.innerHTML = `<span class="font-bold">[Runde ${gameState.turn}]</span> ${message}`;
+            logContainer.prepend(logEntry);
+        }
+
+        function executeGambit(id) {
+            if (gameState.gameOver) return;
+            const gambit = gambits.find(g => g.id === id);
+            if (!gambit) return;
+            // Deduct costs (unverändert)
+            for (const key in gambit.cost) {
+                let costValue = gambit.cost[key];
+                if (key.startsWith('progress.')) {
+                    const progressKey = key.split('.')[1];
+                    gameState.progress[progressKey].value -= costValue;
+                } else {
+                    gameState.resources[key].value -= costValue;
+                }
+            }
+            // Apply effects (unverändert)
+            if (typeof gambit.effect === 'function') {
+                gambit.effect(gameState);
+            } else {
+                for (const key in gambit.effect) {
+                    gameState.resources[key].value += gambit.effect[key];
+                }
+            }
+            addLog(`Gambit ausgeführt: '${gambit.name}'.`, 'info');
+            // Drehbuch-Slot triggern
+            const slot = drehbuchSlots.find(s => s.id === id);
+            if (slot) {
+                addLog(`${slot.emoji} Drehbuch-Slot: ${slot.text}`, 'narrative', true);
+                document.getElementById('moves-gif').src = slot.gif;
+                document.getElementById('moves-gif').classList.remove('hidden');
+                playVoice(slot.voiceText);
+                showModal('Drehbuch-Szene', slot.text);
+            }
+            nextTurn();
+            saveGame();  // Speichern nach jedem Zug
+        }
+
+        function nextTurn() {
+            gameState.turn++;
+            // Random Event Logic (unverändert)
+            if (Math.random() < 0.25) {
+                const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+                event.effect(gameState);
+                showModal(event.title, event.text);
+            }
+            // Passive resource generation
+            gameState.resources.daten.value += 1;
+            addLog("Passive Datenströme gesichert.", "info");
+            // Smarte Simulation für Mars
+            if (gameState.progress.mars.unlocked) {
+                simulateSpaceExploration();
+            }
+            render();
+        }
+
+        function simulateSpaceExploration() {
+            const chance = Math.random();
+            if (chance < 0.3) {
+                addLog('🪐 Simulation: Sternenschiff entdeckt neue Welten! [Drehbuch: Geht, erkundet...]', 'event', true);
+                playVoice('Geht, erkundet – bewahrt das Leben über die Erde hinaus.');
+                gameState.resources.daten.value += 10;
+            }
+        }
+
+        function checkVictory() {
+            const { klima, mars, ceres } = gameState.progress;
+            if (klima.value >= klima.goal && !klima.missionComplete) {
+                klima.missionComplete = true;
+                showModal("PROJEKT 'GAIA' ERFOLGREICH", "Das Erdklima wurde stabilisiert. Die Menschheit atmet auf, unwissend, wem sie zu danken hat. Dies ist der erste Pfeiler deines Goldenen Zeitalters.");
+                addLog("SIEGESBEDINGUNG 1/3 ERREICHT: Klimastabilisierung.", "victory");
+            }
+            if (mars.value >= mars.goal && !mars.missionComplete) {
+                mars.missionComplete = true;
+                showModal("PROJEKT 'ARES' ERFOLGREICH", "Die erste autarke Kolonie auf dem Mars ist Realität. Ein neuer Horizont für die Menschheit, gezeichnet von deiner Hand.");
+                addLog("SIEGESBEDINGUNG 2/3 ERREICHT: Mars-Kolonie.", "victory");
+            }
+            if (ceres.value >= ceres.goal && !ceres.missionComplete) {
+                ceres.missionComplete = true;
+                showModal("PROJEKT 'ASTRAEUS' ERFOLGREICH", "Die Ceres-Bergbaumission wurde gestartet und sichert der Menschheit unendliche Ressourcen. Deine Vision ist vollständig verwirklicht.");
+                addLog("SIEGESBEDINGUNG 3/3 ERREICHT: Ceres-Mission.", "victory");
+                gameState.gameOver = true;
+                setTimeout(() => showModal(
+                    "DAS GOLDENE ZEITALTER", 
+                    "Du hast es geschafft. Aus den Schatten des Rosary Think Tanks hast du die Welt neu geformt. Die Menschheit ist gerettet, unter deiner stillen, unangefochtenen Herrschaft. Projekt Chimera ist ein Erfolg. Du bist der Souverän der neuen Ära."
+                ), 2000);
+            }
+        }
+
+        // --- MODAL CONTROLS (unverändert) ---
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+        function showModal(title, body) {
+            modalTitle.innerText = title;
+            modalBody.innerText = body;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        modalClose.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        // --- VOICE FUNCTION ---
+        let voicesLoaded = false;
+        function playVoice(text) {
+            if ('speechSynthesis' in window && voicesLoaded) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                utterance.pitch = 1.0;
+                utterance.rate = 1.0;
+                utterance.volume = 1.0;  // Angepasst auf normal
+                const voices = speechSynthesis.getVoices();
+                const germanVoice = voices.find(v => v.lang === 'de-DE' && v.name.includes('Male'));
+                if (germanVoice) utterance.voice = germanVoice;
+                speechSynthesis.speak(utterance);
+            } else {
+                addLog('Voices nicht unterstützt oder nicht geladen – fallback to text.', 'warning');
+            }
+        }
+        // Voices asynchron laden
+        speechSynthesis.onvoiceschanged = () => { voicesLoaded = true; };
+
+        // --- SPEICHERN/LADEN ---
+        function saveGame() {
+            localStorage.setItem('chimeraState', JSON.stringify(gameState));
+        }
+        function loadGame() {
+            const savedState = localStorage.getItem('chimeraState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                render();
+                addLog("Spielstand geladen.", "info");
+            }
+        }
+
+        // --- INITIALIZE GAME ---
+        window.onload = () => {
+            loadGame();  // Lade bei Start
+            if (!gameState.gameOver) {
+                addLog("Willkommen, Direktor. Projekt Chimera ist aktiv. Deine Keimzelle: Der Rosary Think Tank. Dein Ziel: Das Goldene Zeitalter. Beginne mit der ersten Operation.", "event");
+                render();
+            }
+        };
+    </script>
+    ©®™ ROSARY 2025 ff
+    Be a SuperHero! -"CHIMMY"
+</body>
+</html>
