@@ -618,3 +618,105 @@
     <!-- Rest des HTML unverändert, inkl. Script -->
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekt Chimera: Das Goldene Zeitalter</title>
+    <link href="output.css" rel="stylesheet"> <!-- Ersetzt CDN – generiere output.css wie oben -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles (nicht in Tailwind) – kopiere hierher, was nicht in output.css passt */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            background-image: url('https://your-server.com/mars_colony.jpg');
+            background-size: cover;
+        }
+        /* ... (dein vollständiger <style>-Inhalt hier, falls nicht in Tailwind integriert) */
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div id="game-container" class="max-w-7xl mx-auto">
+        <!-- HEADER unverändert -->
+        <header class="text-center mb-8">
+            <h1 class="font-orbitron text-3xl md:text-5xl font-bold text-cyan-300 tracking-wider">
+                PROJEKT CHIMERA
+            </h1>
+            <p class="text-cyan-100">
+                Operation: Das Goldene Zeitalter // RUNDE:
+                <span id="turn-counter">1</span>
+            </p>
+            <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
+            <button id="sos-button" class="action-button p-2 mt-4">Send SOS Signal (Light App Reaction)</button>
+        </header>
+        <!-- MAIN GRID unverändert -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- LEFT COLUMN unverändert -->
+            <section class="lg:col-span-1 space-y-6">
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Kommando-Ressourcen
+                    </h2>
+                    <div id="resources-grid" class="grid grid-cols-2 gap-4">
+                    </div>
+                </div>
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Globale Projekte
+                    </h2>
+                    <div id="progress-bars" class="space-y-4">
+                    </div>
+                </div>
+            </section>
+            <!-- MIDDLE COLUMN unverändert -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Gambit-Matrix
+                    </h2>
+                    <div id="actions-container" class="space-y-3">
+                    </div>
+                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
+                    <img id="twists-gif" src="https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif" alt="TWISTS GIF" class="gif-illustration hidden">
+                </div>
+            </section>
+            <!-- RIGHT COLUMN unverändert -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Operations-Log
+                    </h2>
+                    <img src="https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif" alt="Game Loop GIF" class="gif-illustration">
+                    <div id="log-container" class="h-96 overflow-y-auto pr-2 space-y-3">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- MODAL erweitert -->
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="modal-content rounded-lg p-8 m-4 max-w-lg w-full shadow-2xl shadow-cyan-500/20">
+            <h3 id="modal-title" class="font-orbitron text-2xl mb-4 text-cyan-300"></h3>
+            <p id="modal-body" class="mb-6"></p>
+            <div id="modal-media" class="mb-4"></div>
+            <div id="reaction-buttons" class="space-y-2 mb-4"></div>
+            <button id="modal-close" class="w-full action-button p-2 rounded-lg font-bold">Weiter</button>
+        </div>
+    </div>
+    <script>
+        // ... (dein voller JS-Code aus der letzten Version, mit allen Funktionen wie randomEvents, gambits, addLog, executeGambit, etc.)
+        // Um "Inhalte nicht verfügbar" zu beheben, erweitere gambits mit Effekten, z.B.:
+        { 
+            id: 'wissenschaftliche_studie', name: 'Wissenschaftliche Studie veröffentlichen', 
+            cost: { kapital: 50 }, 
+            effect: (state) => { state.resources.legitimitaet.value += 20; state.progress.klima.value += 10; addLog("Studie publiziert: Legitimität gestiegen! 📚", "event"); },
+            description: "Veröffentliche Studie (Kosten: 50 Kapital)"
+        },
+        // Ähnlich für andere – füge sie ins gambits-Array.
+        // Für Logs: Ersetze Placeholders durch dynamische Meldungen in addLog.
+    </script>
+</body>
+</html>
