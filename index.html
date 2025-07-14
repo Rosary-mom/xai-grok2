@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projekt Chimera: Das Goldene Zeitalter</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="output.css" rel="stylesheet"> <!-- Lade von unpkg.com/tailwindcss@^3/dist/tailwind.min.css und nenne es output.css -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto Mono', monospace;
             background-color: #0a0a1a;
             color: #e0e0e0;
-            background-image: url('https://your-server.com/mars_colony.jpg'); /* SuperGrok Mars colony image */
+            background-image: url('https://your-server.com/mars_colony.jpg');
             background-size: cover;
         }
         .font-orbitron {
@@ -195,58 +195,185 @@
                 theraFond: { name: "Thera-Climafonds", value: 0, goal: 1000, unlocked: false, description: "Baut den Fonds auf, um globale Projekte zu finanzieren."},
                 github: { name: "GitHub Kontrolle", value: 0, goal: 100, description: "Erlange die Kontrolle über die wichtigste Code-Plattform der Welt, um 'Hebel' auf die Tech-Industrie zu bekommen."},
                 klima: { name: "Klimastabilisierung", value: 0, goal: 100, unlocked: false, description: "Reduziere die globale Erwärmung durch Geo-Engineering."},
-                mars: { name: "Mars-Kolonie", value: 0, goal: 200, unlocked: false, description: "Errichte eine autarke Basis auf dem Mars."}, // Goal erhöht für längere Progression
+                mars: { name: "Mars-Kolonie", value: 0, goal: 100, unlocked: false, description: "Errichte eine autarke Basis auf dem Mars."},
                 ceres: { name: "Ceres-Mission", value: 0, goal: 100, unlocked: false, description: "Starte eine Bergbaumission im Asteroidengürtel."},
             },
             gameOver: false,
         };
 
-        // --- DREHBUCH SLOTS ---
-        const drehbuchSlots = [
-            { id: 'ruf_zum_handeln', text: "EXT. NEUE ERDE – GOLDENE EBENEN – TAG: Chanelle rennt lachend durch das Gras... [PSPS II: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut.']", gif: 'https://media.giphy.com/media/26FLgGTPsEAq8vs/giphy.gif', emoji: '🚀', voiceText: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut. Die Mission beginnt von Neuem.' },
-            { id: 'letzter_aufstand', text: "EXT. RUINEN DER ALTEN WELT – TAG: Henry führt seine Anhänger... [Henry: 'Wir werden ihr Paradies in den Abgrund ziehen.']", gif: 'https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif', emoji: '⚔️', voiceText: 'Der Hochmut des Dunklen Herrn verblendet ihn. Wähle das Licht.' },
-            { id: 'urteil_alpha', text: "INT. DAS NEUE BETHEL – THRONSAAL – TAG: PSPS II: 'Barmherzigkeit triumphiert, Liebe siegt.'", gif: 'https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif', emoji: '👼', voiceText: 'Barmherzigkeit triumphiert, Liebe siegt.' },
-            { id: 'sternenschiffe_start', text: "Szene 2: Neues Jerusalem steigt herab. PSPS II: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.'", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🌟', voiceText: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.' },
-            { id: 'ceres_harmonie', text: "Finale Szene: Rachel aufersteht. 'Aus dem Reich des Planeten erhebe ich mich neu.'", gif: 'https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif', emoji: '🌹', voiceText: 'Aus dem Reich des Planeten erhebe ich mich neu.' }
-        ];
-
         // --- GAMBITS (ACTIONS) DEFINITION ---
         const gambits = [
-            // Bestehende Gambits (unverändert)
-            { id: 'studie', name: 'Wissenschaftliche Studie veröffentlichen', cost: { kapital: 1 }, effect: { legitimitaet: 5 }, description: "Stärkt dein Ansehen als seriöser Think Tank. (Kosten: 1 Mrd. Kapital)" },
-            { id: 'marktmanipulation', name: 'Marktmanipulation (Levy-Zyklus)', cost: { legitimitaet: 10 }, effect: { kapital: 20, hebel: 5 }, description: "Nutze Marktpsychologie, um Kapital zu generieren und 'Hebel' aufzubauen. Riskant für dein öffentliches Bild. (Kosten: 10 Legitimität)" },
-            { id: 'lobby', name: 'Lobby-Kampagne starten', cost: { kapital: 15 }, effect: { legitimitaet: -2, hebel: 10 }, description: "Übe politischen Einfluss aus, um deine Ziele durchzusetzen. (Kosten: 15 Mrd. Kapital)" },
-            { id: 'startup_kauf', name: 'Startups auf GitHub akquirieren', cost: { kapital: 10 }, effect: (state) => { state.progress.github.value += 5; state.resources.daten.value += 2; }, description: "Erhöhe deine Kontrolle über GitHub und sammle wertvolle Daten. (Kosten: 10 Mrd. Kapital)" },
-            { id: 'gruende_fonds', name: 'Thera-Climafonds gründen', cost: { kapital: 100, legitimitaet: 10 }, effect: (state) => { state.progress.theraFond.unlocked = true; state.progress.klima.unlocked = true; addLog("Der Thera-Climafonds wurde gegründet! Neue strategische Optionen sind verfügbar.", "event"); }, condition: (state) => !state.progress.theraFond.unlocked && state.resources.legitimitaet.value >= 50, description: "Der Grundstein für dein Endspiel. Schaltet Klimaprojekte frei. (Kosten: 100 Mrd. Kapital, 10 Legitimität)" },
-            { id: 'investiere_fonds', name: 'In Thera-Climafonds investieren', cost: { kapital: 50 }, effect: (state) => { state.progress.theraFond.value += 50; state.resources.legitimitaet.value += 5; }, condition: (state) => state.progress.theraFond.unlocked, description: "Stärke deinen Fonds und deine Legitimität als Retter der Welt. (Kosten: 50 Mrd. Kapital)" },
-            { id: 'starte_geoengineering', name: 'Geo-Engineering Projekt starten', cost: { daten: 20, 'progress.theraFond': 100 }, effect: (state) => { state.progress.klima.value += 10; state.progress.theraFond.value -= 100; }, condition: (state) => state.progress.theraFond.value >= 100 && state.progress.klima.unlocked, description: "Nutze den Fonds und Daten, um das Klima zu stabilisieren. (Kosten: 100 Fonds-Kapital, 20 Datenströme)" },
-            { id: 'starte_mars_programm', name: 'Mars-Programm initiieren', cost: { 'progress.theraFond': 250, hebel: 50 }, effect: (state) => { state.progress.mars.unlocked = true; state.progress.theraFond.value -= 250; addLog("Das Mars-Programm 'Goldenes Zeitalter' wurde gestartet!", "event"); }, condition: (state) => !state.progress.mars.unlocked && state.progress.theraFond.value >= 250 && state.progress.github.value >= 50, description: "Nutze deinen Einfluss und dein Kapital, um die Kolonisierung des Mars vorzubereiten. (Benötigt 50% GitHub-Kontrolle)" },
-            { id: 'finanziere_mars_mission', name: 'Mars-Mission finanzieren', cost: { 'progress.theraFond': 100, daten: 50 }, effect: (state) => { state.progress.mars.value += 10; state.progress.theraFond.value -= 100; }, condition: (state) => state.progress.mars.unlocked && state.progress.theraFond.value >= 100, description: "Ein weiterer Schritt zur Besiedlung des roten Planeten. (Kosten: 100 Fonds-Kapital, 50 Datenströme)" },
-            { id: 'amazon_legacy', name: 'Amazon Legacy Gambit', cost: { legitimitaet: 10 }, effect: { legitimitaet: 20 }, description: "Boost legitimacy using Amazon Delta archaeology. (Kosten: 10 Legitimität)" },
-            { id: 'going_clay', name: 'Going Clay Gambit', cost: { kapital: 20 }, effect: (state) => { let crash_chance = Math.random(); if (crash_chance < 0.2) { let loss = state.resources.kapital.value * 0.3; let investment = state.resources.kapital.value * 0.2; let return_factor = 1 + (state.resources.hebel.value * 0.01 * 0.3); state.resources.kapital.value = state.resources.kapital.value - loss + (investment * return_factor); state.resources.hebel.value += (state.resources.kapital.value - loss) * 0.5; addLog("Crash triggered! Capital adjusted, but Leverage gained for 'investment when going clay'.", "warning"); } else { addLog("No crash this time. Standard investment applied.", "info"); state.resources.kapital.value += 10; } }, description: "Invest during potential crash for high returns using Levy Legacy. (Kosten: 20 Kapital)" },
-            { id: 'debt_crisis', name: 'Debt Crisis Gambit', cost: { kapital: 30 }, effect: { kapital: -15, hebel: 25 }, description: "Simulate USA debt crisis – reduces Capital but boosts Leverage for investments. (Kosten: 30 Kapital)" },
-            { id: 'evident_facts', name: 'Evident Facts Gambit', cost: { legitimitaet: 5 }, effect: { legitimitaet: 15, kapital: 10 }, description: "Emphasize BIOSEAL facts to avoid greenwashing, boosting legitimacy and capital. (Kosten: 5 Legitimität)" },
-            { id: 'crypto_voucher', name: 'Crypto Voucher Investment', cost: { daten: 10 }, effect: { daten: 20, kapital: 15 }, description: "Invest in QR-Reg vouchers with Starlink/TESLA tech for high-speed communication. (Kosten: 10 Datenströme)" },
-            { id: 'international_alliance', name: 'International Alliance Gambit', cost: { hebel: 10 }, effect: (state) => { state.progress.klima.value += 15; }, description: "Form alliances as nations can't shoulder climate crises alone. Boosts climate stabilization. (Kosten: 10 Hebel)" },
-            // Neue Gambits für Mars-Mission mit Drehbuch-Integration
-            { id: 'ruf_zum_handeln', name: 'Ruf zum Handeln starten', cost: { hebel: 20 }, effect: (state) => { state.progress.mars.value += 10; }, condition: (state) => state.progress.mars.unlocked, description: "Starte den Ruf zum Handeln (Akt 1). (Kosten: 20 Hebel)" },
-            { id: 'letzter_aufstand', name: 'Letzten Aufstand bekämpfen', cost: { kapital: 50 }, effect: (state) => { state.progress.mars.value += 15; if (Math.random() < 0.2) state.resources.legitimitaet.value -= 10; }, condition: (state) => state.progress.mars.value >= 50, description: "Bekämpfe den letzten Aufstand des Dunklen. (Kosten: 50 Kapital)" },
-            { id: 'urteil_alpha', name: 'Urteil des Alpha rufen', cost: { legitimitaet: 30 }, effect: (state) => { state.progress.mars.value += 20; state.progress.ceres.unlocked = true; Object.keys(state.resources).forEach(k => state.resources[k].value += 10); }, condition: (state) => state.progress.mars.value >= 75, description: "Rufe das Urteil des Alpha. (Kosten: 30 Legitimität)" },
-            { id: 'sternenschiffe_start', name: 'Sternenschiffe starten', cost: { daten: 50 }, effect: (state) => { state.progress.mars.value += 25; }, condition: (state) => state.progress.mars.value >= 90, description: "Starte die Sternenschiffe. (Kosten: 50 Datenströme)" },
-            { id: 'ceres_harmonie', name: 'Kosmische Harmonie herstellen', cost: { 'progress.mars': 200, hebel: 50 }, effect: (state) => { state.progress.ceres.value = 100; }, condition: (state) => state.progress.ceres.unlocked, description: "Herstelle kosmische Harmonie auf Ceres. (Kosten: 200 Mars-Fortschritt, 50 Hebel)" }
+            { 
+                id: 'studie', name: 'Wissenschaftliche Studie veröffentlichen', 
+                cost: { kapital: 1 }, 
+                effect: { legitimitaet: 5 }, 
+                description: "Stärkt dein Ansehen als seriöser Think Tank. (Kosten: 1 Mrd. Kapital)"
+            },
+            { 
+                id: 'marktmanipulation', name: 'Marktmanipulation (Levy-Zyklus)', 
+                cost: { legitimitaet: 10 }, 
+                effect: { kapital: 20, hebel: 5 }, 
+                description: "Nutze Marktpsychologie, um Kapital zu generieren und 'Hebel' aufzubauen. Riskant für dein öffentliches Bild. (Kosten: 10 Legitimität)"
+            },
+            { 
+                id: 'lobby', name: 'Lobby-Kampagne starten', 
+                cost: { kapital: 15 }, 
+                effect: { legitimitaet: -2, hebel: 10 }, 
+                description: "Übe politischen Einfluss aus, um deine Ziele durchzusetzen. (Kosten: 15 Mrd. Kapital)"
+            },
+            {
+                id: 'startup_kauf', name: 'Startups auf GitHub akquirieren',
+                cost: { kapital: 10 },
+                effect: (state) => { state.progress.github.value += 5; state.resources.daten.value += 2; },
+                description: "Erhöhe deine Kontrolle über GitHub und sammle wertvolle Daten. (Kosten: 10 Mrd. Kapital)"
+            },
+            {
+                id: 'gruende_fonds', name: 'Thera-Climafonds gründen',
+                cost: { kapital: 100, legitimitaet: 10 },
+                effect: (state) => { 
+                    state.progress.theraFond.unlocked = true;
+                    state.progress.klima.unlocked = true;
+                    addLog("Der Thera-Climafonds wurde gegründet! Neue strategische Optionen sind verfügbar.", "event");
+                },
+                condition: (state) => !state.progress.theraFond.unlocked && state.resources.legitimitaet.value >= 50,
+                description: "Der Grundstein für dein Endspiel. Schaltet Klimaprojekte frei. (Kosten: 100 Mrd. Kapital, 10 Legitimität)"
+            },
+            {
+                id: 'investiere_fonds', name: 'In Thera-Climafonds investieren',
+                cost: { kapital: 50 },
+                effect: (state) => { state.progress.theraFond.value += 50; state.resources.legitimitaet.value += 5; },
+                condition: (state) => state.progress.theraFond.unlocked,
+                description: "Stärke deinen Fonds und deine Legitimität als Retter der Welt. (Kosten: 50 Mrd. Kapital)"
+            },
+            {
+                id: 'starte_geoengineering', name: 'Geo-Engineering Projekt starten',
+                cost: { daten: 20, 'progress.theraFond': 100 },
+                effect: (state) => { state.progress.klima.value += 10; state.progress.theraFond.value -= 100; },
+                condition: (state) => state.progress.theraFond.value >= 100 && state.progress.klima.unlocked,
+                description: "Nutze den Fonds und Daten, um das Klima zu stabilisieren. (Kosten: 100 Fonds-Kapital, 20 Datenströme)"
+            },
+             {
+                id: 'starte_mars_programm', name: 'Mars-Programm initiieren',
+                cost: { 'progress.theraFond': 250, hebel: 50 },
+                effect: (state) => { 
+                    state.progress.mars.unlocked = true;
+                    state.progress.theraFond.value -= 250;
+                    addLog("Das Mars-Programm 'Goldenes Zeitalter' wurde gestartet!", "event");
+                },
+                condition: (state) => !state.progress.mars.unlocked && state.progress.theraFond.value >= 250 && state.progress.github.value >= 50,
+                description: "Nutze deinen Einfluss und dein Kapital, um die Kolonisierung des Mars vorzubereiten. (Benötigt 50% GitHub-Kontrolle)"
+            },
+            {
+                id: 'finanziere_mars_mission', name: 'Mars-Mission finanzieren',
+                cost: { 'progress.theraFond': 100, daten: 50 },
+                effect: (state) => { state.progress.mars.value += 10; state.progress.theraFond.value -= 100; },
+                condition: (state) => state.progress.mars.unlocked && state.progress.theraFond.value >= 100,
+                description: "Ein weiterer Schritt zur Besiedlung des roten Planeten. (Kosten: 100 Fonds-Kapital, 50 Datenströme)"
+            },
+            // New Gambit: Amazon Legacy
+            { 
+                id: 'amazon_legacy', name: 'Amazon Legacy Gambit', 
+                cost: { legitimitaet: 10 }, 
+                effect: { legitimitaet: 20 }, 
+                description: "Boost legitimacy using Amazon Delta archaeology. (Kosten: 10 Legitimität)"
+            },
+            // New Gambit: Going Clay (with Levy Legacy integration)
+            { 
+                id: 'going_clay', name: 'Going Clay Gambit', 
+                cost: { kapital: 20 }, 
+                effect: (state) => { 
+                    let crash_chance = Math.random();
+                    if (crash_chance < 0.2) {
+                        let loss = state.resources.kapital.value * 0.3;
+                        let investment = state.resources.kapital.value * 0.2;
+                        let return_factor = 1 + (state.resources.hebel.value * 0.01 * 0.3);
+                        state.resources.kapital.value = state.resources.kapital.value - loss + (investment * return_factor);
+                        state.resources.hebel.value += (state.resources.kapital.value - loss) * 0.5;
+                        addLog("Crash triggered! Capital adjusted, but Leverage gained for 'investment when going clay'.", "warning");
+                    } else {
+                        addLog("No crash this time. Standard investment applied.", "info");
+                        state.resources.kapital.value += 10; // Fallback minor gain
+                    }
+                }, 
+                description: "Invest during potential crash for high returns using Levy Legacy. (Kosten: 20 Kapital)"
+            },
+            // New Realistic Gambit: Debt Crisis
+            { 
+                id: 'debt_crisis', name: 'Debt Crisis Gambit', 
+                cost: { kapital: 30 }, 
+                effect: { kapital: -15, hebel: 25 }, 
+                description: "Simulate USA debt crisis – reduces Capital but boosts Leverage for investments. (Kosten: 30 Kapital)"
+            },
+            // New Realistic Gambit: Evident Facts (No Green Washing)
+            { 
+                id: 'evident_facts', name: 'Evident Facts Gambit', 
+                cost: { legitimitaet: 5 }, 
+                effect: { legitimitaet: 15, kapital: 10 }, 
+                description: "Emphasize BIOSEAL facts to avoid greenwashing, boosting legitimacy and capital. (Kosten: 5 Legitimität)"
+            },
+            // New Realistic Gambit: Crypto Voucher Investment
+            { 
+                id: 'crypto_voucher', name: 'Crypto Voucher Investment', 
+                cost: { daten: 10 }, 
+                effect: { daten: 20, kapital: 15 }, 
+                description: "Invest in QR-Reg vouchers with Starlink/TESLA tech for high-speed communication. (Kosten: 10 Datenströme)"
+            },
+            // New Realistic Gambit: International Alliance (for Climate Crises)
+            { 
+                id: 'international_alliance', name: 'International Alliance Gambit', 
+                cost: { hebel: 10 }, 
+                effect: { progress: { klima: 15 } }, 
+                description: "Form alliances as nations can't shoulder climate crises alone. Boosts climate stabilization. (Kosten: 10 Hebel)"
+            }
         ];
-
         // --- RANDOM EVENTS DEFINITION ---
         const randomEvents = [
-            // Bestehende Events (unverändert)
-            { title: "Markt-Crash (Levy-Zyklus)", text: "Eine Spekulationsblase platzt. Die Märkte sind in Panik. Dein Verständnis für Psychologie gibt dir eine einzigartige Chance. Levy Legacy Excerpt: 'Good times breed laxity, laxity breeds unreliable numbers...'", effect: (state) => { state.resources.kapital.value = Math.floor(state.resources.kapital.value * 0.7); state.resources.hebel.value += 20; state.inLevyCycle = true; state.levyRounds = 3; addLog("Markt-Crash! Kapital reduziert, aber dein 'Hebel' auf geschwächte Konkurrenten steigt. Entering Levy Rounds.", "event"); showModal("Levy Legacy Cycle", levyLegacyText[Math.floor(Math.random() * levyLegacyText.length)]); } },
-            { title: "Technologischer Durchbruch", text: "Ein von dir finanziertes Startup erzielt einen Durchbruch in der KI-Forschung. Deine Datenverarbeitungskapazität steigt sprunghaft an.", effect: (state) => { state.resources.daten.value += 25; addLog("Technologischer Durchbruch! Datenströme signifikant erhöht.", "event"); } },
-            { title: "Politischer Skandal aufgedeckt", text: "Einer deiner Konkurrenten ist in einen massiven Korruptionsskandal verwickelt. Deine Organisation wirkt im Vergleich dazu wie ein Leuchtfeuer der Integrität.", effect: (state) => { state.resources.legitimitaet.value += 15; addLog("Politischer Skandal stärkt deine Legitimität.", "event"); } },
-            { title: "GitHub ändert die AGB", text: "GitHub verschärft seine Richtlinien. Deine Übernahmebemühungen werden erschwert.", effect: (state) => { state.progress.github.value = Math.max(0, state.progress.github.value - 10); addLog("Rückschlag bei GitHub! Deine Kontrolle wurde reduziert.", "warning"); } },
-            { title: "Climate Crisis Event", text: "A nation faces flooding/earthquake – one country can't shoulder the load alone. Levy Legacy Excerpt: 'No one has the excuse of claiming that there were no omens of impending disaster.'", effect: (state) => { state.resources.kapital.value -= 20; addLog("Climate Crisis! Capital reduced – form international alliances to resolve.", "warning"); showModal("Climate Crisis", "Nations can't handle crises alone. Use International Alliance Gambit."); } },
-            // Neue Mars-Events
-            { title: "Micrometeoroid-Schauer", text: "Dein Schiff wird beschädigt (Drehbuch: Hull breach!).", effect: (state) => { state.resources.kapital.value -= 30; addLog("Schauer trifft! 'Pressure loss – stabilize the ship!'", "warning"); showModal("Raum-Krise", "Nutze Dr. Pepper-Methode zur Lokalisierung? Opfere Ressourcen für Reparatur."); } },
-            { title: "Alien-Entdeckung", text: "Hologramm zeigt Mars-Geschichte (Drehbuch: 'Martians seeded Earth').", effect: (state) => { state.resources.hebel.value += 50; addLog("Entdeckung: 'The Cambrian explosion – we are them!'", "event"); } }
+            {
+                title: "Markt-Crash (Levy-Zyklus)",
+                text: "Eine Spekulationsblase platzt. Die Märkte sind in Panik. Dein Verständnis für Psychologie gibt dir eine einzigartige Chance. Levy Legacy Excerpt: 'Good times breed laxity, laxity breeds unreliable numbers...'",
+                effect: (state) => {
+                    state.resources.kapital.value = Math.floor(state.resources.kapital.value * 0.7);
+                    state.resources.hebel.value += 20;
+                    state.inLevyCycle = true; // Start multi-round Levy Cycle
+                    state.levyRounds = 3; // 3 rounds of cycle
+                    addLog("Markt-Crash! Kapital reduziert, aber dein 'Hebel' auf geschwächte Konkurrenten steigt. Entering Levy Rounds.", "event");
+                    showModal("Levy Legacy Cycle", levyLegacyText[Math.floor(Math.random() * levyLegacyText.length)]);
+                }
+            },
+            {
+                title: "Technologischer Durchbruch",
+                text: "Ein von dir finanziertes Startup erzielt einen Durchbruch in der KI-Forschung. Deine Datenverarbeitungskapazität steigt sprunghaft an.",
+                effect: (state) => {
+                    state.resources.daten.value += 25;
+                    addLog("Technologischer Durchbruch! Datenströme signifikant erhöht.", "event");
+                }
+            },
+            {
+                title: "Politischer Skandal aufgedeckt",
+                text: "Einer deiner Konkurrenten ist in einen massiven Korruptionsskandal verwickelt. Deine Organisation wirkt im Vergleich dazu wie ein Leuchtfeuer der Integrität.",
+                effect: (state) => {
+                    state.resources.legitimitaet.value += 15;
+                    addLog("Politischer Skandal stärkt deine Legitimität.", "event");
+                }
+            },
+            {
+                title: "GitHub ändert die AGB",
+                text: "GitHub verschärft seine Richtlinien. Deine Übernahmebemühungen werden erschwert.",
+                effect: (state) => {
+                    state.progress.github.value = Math.max(0, state.progress.github.value - 10);
+                    addLog("Rückschlag bei GitHub! Deine Kontrolle wurde reduziert.", "warning");
+                }
+            },
+            // New Event: Climate Crisis
+            {
+                title: "Climate Crisis Event",
+                text: "A nation faces flooding/earthquake – one country can't shoulder the load alone. Levy Legacy Excerpt: 'No one has the excuse of claiming that there were no omens of impending disaster.'",
+                effect: (state) => {
+                    state.resources.kapital.value -= 20;
+                    addLog("Climate Crisis! Capital reduced – form international alliances to resolve.", "warning");
+                    showModal("Climate Crisis", "Nations can't handle crises alone. Use International Alliance Gambit.");
+                }
+            }
         ];
 
         // --- UI RENDERING FUNCTIONS ---
@@ -258,7 +385,7 @@
 
         function render() {
             if (gameState.gameOver) return;
-            // Render Resources (unverändert)
+            // Render Resources
             resourcesGrid.innerHTML = '';
             for (const key in gameState.resources) {
                 const res = gameState.resources[key];
@@ -283,12 +410,12 @@
                     </div>
                 `;
             }
-            // Render Progress Bars (unverändert)
+            // Render Progress Bars
             progressBarsContainer.innerHTML = '';
             for (const key in gameState.progress) {
                 const prog = gameState.progress[key];
                 if (key !== 'theraFond' && (prog.unlocked === undefined || prog.unlocked)) {
-                    progressBarsContainer.innerHTML += `
+                    progressBarsContainer.innerHTML +=`
                         <div class="has-tooltip relative">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-sm">${prog.name}</span>
@@ -302,7 +429,7 @@
                     `;
                 }
             }
-            // Render Actions (unverändert)
+            // Render Actions
             actionsContainer.innerHTML = '';
             gambits.forEach(gambit => {
                 if (gambit.condition === undefined || gambit.condition(gameState)) {
@@ -334,31 +461,24 @@
             turnCounter.innerText = gameState.turn;
             checkVictory();
         }
-
         // --- GAME LOGIC FUNCTIONS ---
-        function addLog(message, type = 'info', isDynamic = false) {  // Überarbeitete Version mit isDynamic
+        function addLog(message, type = 'info') {
             const colorClasses = {
                 info: 'text-gray-300 border-cyan-500',
                 event: 'text-yellow-300 border-yellow-500',
                 warning: 'text-red-400 border-red-500',
                 victory: 'text-green-300 border-green-500 font-bold',
-                narrative: 'text-purple-300 border-purple-500'  // Neu für Drehbuch-Slots
             };
-            if (isDynamic && drehbuchSlots.length > 0) {
-                const randomSlot = drehbuchSlots[Math.floor(Math.random() * drehbuchSlots.length)];
-                message += ` ${randomSlot.emoji} Echo aus dem Goldenen Zeitalter: "${randomSlot.text.substring(0, 50)}..."`;
-            }
             const logEntry = document.createElement('div');
-            logEntry.className = `log-entry p-2 text-sm ${colorClasses[type] || colorClasses.info}`;
+            logEntry.className = `log-entry p-2 text-sm ${colorClasses[type]}`;
             logEntry.innerHTML = `<span class="font-bold">[Runde ${gameState.turn}]</span> ${message}`;
             logContainer.prepend(logEntry);
         }
-
         function executeGambit(id) {
             if (gameState.gameOver) return;
             const gambit = gambits.find(g => g.id === id);
             if (!gambit) return;
-            // Deduct costs (unverändert)
+            // Deduct costs
             for (const key in gambit.cost) {
                 let costValue = gambit.cost[key];
                 if (key.startsWith('progress.')) {
@@ -368,55 +488,30 @@
                     gameState.resources[key].value -= costValue;
                 }
             }
-            // Apply effects (unverändert)
+            // Apply effects
             if (typeof gambit.effect === 'function') {
                 gambit.effect(gameState);
             } else {
                 for (const key in gambit.effect) {
-                    gameState.resources[key].value += gambit.effect[key];
+                     gameState.resources[key].value += gambit.effect[key];
                 }
             }
             addLog(`Gambit ausgeführt: '${gambit.name}'.`, 'info');
-            // Drehbuch-Slot triggern
-            const slot = drehbuchSlots.find(s => s.id === id);
-            if (slot) {
-                addLog(`${slot.emoji} Drehbuch-Slot: ${slot.text}`, 'narrative', true);
-                document.getElementById('moves-gif').src = slot.gif;
-                document.getElementById('moves-gif').classList.remove('hidden');
-                playVoice(slot.voiceText);
-                showModal('Drehbuch-Szene', slot.text);
-            }
             nextTurn();
-            saveGame();  // Speichern nach jedem Zug
         }
-
         function nextTurn() {
             gameState.turn++;
-            // Random Event Logic (unverändert)
-            if (Math.random() < 0.25) {
+            // Random Event Logic
+            if (Math.random() < 0.25) { // 25% chance of an event each turn
                 const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
                 event.effect(gameState);
                 showModal(event.title, event.text);
             }
-            // Passive resource generation
+            // Passive resource generation (optional)
             gameState.resources.daten.value += 1;
             addLog("Passive Datenströme gesichert.", "info");
-            // Smarte Simulation für Mars
-            if (gameState.progress.mars.unlocked) {
-                simulateSpaceExploration();
-            }
             render();
         }
-
-        function simulateSpaceExploration() {
-            const chance = Math.random();
-            if (chance < 0.3) {
-                addLog('🪐 Simulation: Sternenschiff entdeckt neue Welten! [Drehbuch: Geht, erkundet...]', 'event', true);
-                playVoice('Geht, erkundet – bewahrt das Leben über die Erde hinaus.');
-                gameState.resources.daten.value += 10;
-            }
-        }
-
         function checkVictory() {
             const { klima, mars, ceres } = gameState.progress;
             if (klima.value >= klima.goal && !klima.missionComplete) {
@@ -429,10 +524,14 @@
                 showModal("PROJEKT 'ARES' ERFOLGREICH", "Die erste autarke Kolonie auf dem Mars ist Realität. Ein neuer Horizont für die Menschheit, gezeichnet von deiner Hand.");
                 addLog("SIEGESBEDINGUNG 2/3 ERREICHT: Mars-Kolonie.", "victory");
             }
-            if (ceres.value >= ceres.goal && !ceres.missionComplete) {
-                ceres.missionComplete = true;
-                showModal("PROJEKT 'ASTRAEUS' ERFOLGREICH", "Die Ceres-Bergbaumission wurde gestartet und sichert der Menschheit unendliche Ressourcen. Deine Vision ist vollständig verwirklicht.");
-                addLog("SIEGESBEDINGUNG 3/3 ERREICHT: Ceres-Mission.", "victory");
+             // Ceres mission is not fully implemented as a gambit chain, but we check for it
+            if (klima.missionComplete && mars.missionComplete) { // Simplified victory for now
+                // As Ceres is not implemented, let's make it an automatic win after the other two for demo purposes
+                if (!ceres.missionComplete) {
+                    ceres.missionComplete = true; // Mark it as complete
+                    showModal("PROJEKT 'ASTRAEUS' ERFOLGREICH", "Die Ceres-Bergbaumission wurde gestartet und sichert der Menschheit unendliche Ressourcen. Deine Vision ist vollständig verwirklicht.");
+                    addLog("SIEGESBEDINGUNG 3/3 ERREICHT: Ceres-Mission.", "victory");
+                }
                 gameState.gameOver = true;
                 setTimeout(() => showModal(
                     "DAS GOLDENE ZEITALTER", 
@@ -440,8 +539,7 @@
                 ), 2000);
             }
         }
-
-        // --- MODAL CONTROLS (unverändert) ---
+        // --- MODAL CONTROLS ---
         const modal = document.getElementById('modal');
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
@@ -456,50 +554,440 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         });
-
-        // --- VOICE FUNCTION ---
-        let voicesLoaded = false;
-        function playVoice(text) {
-            if ('speechSynthesis' in window && voicesLoaded) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'de-DE';
-                utterance.pitch = 1.0;
-                utterance.rate = 1.0;
-                utterance.volume = 1.0;  // Angepasst auf normal
-                const voices = speechSynthesis.getVoices();
-                const germanVoice = voices.find(v => v.lang === 'de-DE' && v.name.includes('Male'));
-                if (germanVoice) utterance.voice = germanVoice;
-                speechSynthesis.speak(utterance);
-            } else {
-                addLog('Voices nicht unterstützt oder nicht geladen – fallback to text.', 'warning');
-            }
-        }
-        // Voices asynchron laden
-        speechSynthesis.onvoiceschanged = () => { voicesLoaded = true; };
-
-        // --- SPEICHERN/LADEN ---
-        function saveGame() {
-            localStorage.setItem('chimeraState', JSON.stringify(gameState));
-        }
-        function loadGame() {
-            const savedState = localStorage.getItem('chimeraState');
-            if (savedState) {
-                gameState = JSON.parse(savedState);
-                render();
-                addLog("Spielstand geladen.", "info");
-            }
-        }
-
         // --- INITIALIZE GAME ---
         window.onload = () => {
-            loadGame();  // Lade bei Start
-            if (!gameState.gameOver) {
-                addLog("Willkommen, Direktor. Projekt Chimera ist aktiv. Deine Keimzelle: Der Rosary Think Tank. Dein Ziel: Das Goldene Zeitalter. Beginne mit der ersten Operation.", "event");
-                render();
-            }
+            addLog("Willkommen, Direktor. Projekt Chimera ist aktiv. Deine Keimzelle: Der Rosary Think Tank. Dein Ziel: Das Goldene Zeitalter. Beginne mit der ersten Operation.", "event");
+            render();
         };
     </script>
     ©®™ ROSARY 2025 ff
-    Be a SuperHero! -"CHIMMY"
+    Be a SuperHumanHero! -"CHIMMY"
+    
+
+
+
+
+
+
+
+
+איוב
+Iob
+
+
+17 v. 14Col. 1:1 ‭[....]‬.ה v. 15 ומא אפו א̇‭[.....]‬
+v. 16 l. 2       ה̇עמי לשאול ת̇‭[.....]‬
+v. 16 l. 3       ‭...]‬ ‭[.‬ש̇כ̇ב
+
+
+18 v. 1 l. 4 ‭...]‬ ע̇נ̇א בלדד שוחא̇ה̇ ‭[...‬
+v. 2 l. 5       ‭[.....]‬ ת̇ש̇ו̇א̇ סוף למ̇ל̇י̇ן̇ ‭[...‬
+v. 3 l. 6       ‭...]‬ ל̇ב̇ע̇ירא דמינא ‭[...]‬
+v. 4 l. 7       ‭[...]‬ העל דב̇ר̇ת̇ך̇ ‭[...‬
+v. 4 l. 8       ‭[...]‬ מן אתר̇ה̇ ‭[...‬
+
+
+19 v. 11 Col. 2:1 ו̇ת̇ק̇ף עלי רגזה ו̇ח̇‭[....]‬
+v. 12 l. 2       י̇ת̇ון חתפוהי וכבשו̇ ‭[...]‬
+v. 13 l. 3       ה̇רחקו וידעי ב.‭[.....]‬
+v. 15 l. 4       ב̇יתי אמתי לנכרי̇ ‭[...‬
+v. 16 l. 5       לעבדי קרית ולא ‭[...]‬
+v. 17 l. 6       רוח המכת לאנתתי̇ ‭[...]‬
+v. 18 l. 7       ר̇שיעין יסגפ̇ו̇נ̇נ̇י̇ ‭[...‬
+v. 19 l. 8       כ̇ל אנש די̇ ‭[...]‬
+v. 29 Col. 3:1       ‭[...]‬ ב̇איש
+v. 29 l. 2       ‭[...]‬
+
+
+20 v. 1 l. 3 ‭[...]‬ ו̇ה̇ת̇י̇ב לכן לבבי י‭..]‬ ‭[...‬
+v. 3 l. 4       ‭...]‬ כ̇מ̇לתי אשמע ורוח̇ ‭[...‬
+v. 4 l. 5       ‭...]‬ י̇ד̇ע̇ת מן עלמא מן ד̇י̇ ‭[...‬
+v. 4 l. 6       ‭[......]‬ v. 5      ארו מבע רשיע̇י̇ן̇ ‭[...‬
+v. 5 l. 7       ‭[...]‬ לעבע תעדא
+v. 6 l. 8       ‭...]‬ ו̇ר̇א̇ש̇ה לענניא ‭[...]‬
+
+
+21 v. 2 Col. 4:1 ‭[...]‬ לי להות‭[......]‬
+v. 3 l. 2       מ̇נדעי תמיק̇ו̇ן̇ ‭[...‬
+v. 4 l. 3       ארו אפו לא ת‭..]‬ ‭[...‬
+v. 5 l. 4       סימו ידיכון על ‭[...]‬
+v. 6 l. 5       ותמהא אחד לי v. 7      ‭[.....]‬
+v. 7 l. 6       והסגיו נכסין v. 8      זרע̇י̇ה̇ו̇ן̇ ‭[...‬
+v. 8 l. 7       לעיניהון v. 9      בתיהון̇ ‭[...]‬
+v. 9 l. 8       אלהא עליהו̇ן̇ ‭[...‬
+v. 10 l. 9       ה̇ריתהון̇ פ̇ל̇ט̇ת̇ ‭[...‬
+v. 20 Col. 5:1       ‭...]‬ ע̇י̇נ̇ו̇הי במפלתה ו̇מ̇‭.]‬ ‭[...‬
+v. 21 l. 2       ‭[...]‬ צ̇בו לאלהא בביתה ‭[.....]‬
+v. 21 l. 3       ‭...]‬ ו̇מ̇נ̇י̇ן ירחוהי ג̇ז̇י̇רין v. 22      הל̇א̇ל̇ה̇א̇ ‭[...‬
+v. 22 l. 4       ‭...]‬ ו̇ה̇וא רמיא מדין אב‭[....]‬
+v. 24 l. 5       ‭[.....]‬ גרמוהי v. 25      דן ימות בנפ̇ש̇ ‭[...‬
+v. 25 l. 6       ‭[.....]‬ אכל v. 26      כחדה על ‭[...]‬
+v. 26 l. 7       ‭...]‬ ע̇ליהון v. 27      ארו ידע̇ת̇ ‭[...‬
+v. 27 l. 8       ‭[...]‬ התעיטו̇ן̇ ‭[...‬
+
+
+22 v. 3 Col. 6:1 ‭...]‬ ל̇א̇להא
+v. 3 l. 2       ‭[...]‬ א̇רחך
+v. 4 l. 3       ‭...]‬ י̇על עמך
+v. 5 l. 4       ‭...]‬ ל̇א איתי
+v. 6 l. 5       ‭...]‬ ל̇א̇ח̇יך מגן
+v. 7 l. 6       ‭...]‬ ל̇צ̇הא לא
+v. 7 l. 7       ‭...]‬ ל̇ח̇ם v. 8      ואמרת
+v. 8 l. 8       ‭[...]‬ א̇פוהי
+v. 9 l. 9       ‭...]‬ ר̇י̇ק̇נ̇ה
+v. 16 Col. 7:1       די מיתו ‭[...]‬
+v. 17 l. 2       אמרין ל̇‭.]‬ ‭[...‬
+v. 17 l. 3       לנא אלהא̇ ‭[...‬
+v. 18 l. 4       ועטת רש̇י̇ע̇י̇ן̇ ‭[...‬
+v. 19 l. 5       ויחאכון ו‭.]‬ ‭[...‬
+v. 20 l. 6       היך לא ‭[...]‬
+v. 21 l. 7       הסתכל̇ ‭[...]‬
+v. 22 l. 8       קבל̇ ‭[...]‬
+v. 22 l. 9       ‭[...]‬
+
+
+24 v. 12 Col. 8:1 מן קריהו̇ן̇ ‭[...]‬
+v. 12 l. 2       תקבל אלהא̇ ‭[...]‬
+v. 13 l. 3       קדמוהי לנורא̇ ‭[...‬
+v. 13 l. 4       בשבילוהי v. 14      ל̇‭.]‬ ‭[...‬
+v. 14 l. 5       ומסכן ובלי̇ל̇י̇א̇ ‭[...‬
+v. 15 l. 6       קבל למא̇מ̇ר̇ ‭[...‬
+v. 15 l. 7       ויחטא v. 16      חת̇ר̇ ‭[...‬
+v. 16 l. 8       כבאיש̇ ‭[...‬
+v. 17 l. 9       להון̇ ‭[...]‬
+v. 24 Col. 9:1       ‭...]‬ ו̇ה̇ת̇כ̇פ̇פו כיב̇ל̇א יתקפצון א̇ו̇ ‭[...‬
+v. 25 l. 2       ‭...]‬ מ̇ן̇ אפו יתיבנני פתגם וי‭[....]‬
+
+
+25 v. 1 l. 3 ענא בלד̇ד̇ ‭[...‬
+v. 2 l. 4       ‭...]‬ ש̇ל̇טן ורבו עם אלהא ע̇ב̇ד̇ ‭[...‬
+v. 2 l. 5       ‭...]‬ ב̇מ̇ר̇ו̇מ̇ה v. 3      האיתי רחצן להש̇‭[....]‬
+v. 3 l. 6       ‭[...]‬ או על מן לא תקום̇ ‭[...]‬
+v. 4 l. 7       ‭[...]‬ א̇להא ומא יצדק̇ ‭[...]‬
+v. 5 l. 8       ‭[...]‬ זכי וכוכביא לא̇ ‭[...]‬
+v. 6 l. 9       ‭...]‬ ו̇ב̇ר̇ אנש תולע̇ה̇ ‭[...‬
+
+
+26 v. 2 l. 10 ‭[...]‬ ה̇ע̇ד̇ר̇ת̇ ‭[...‬
+v. 10 Col. 10:1       ‭[...]‬ ע̇ל̇ א̇נ̇פי ח̇ש̇ו̇ך
+v. 11 l. 2       ‭...]‬ י̇ז̇יע ויתמהון מן
+v. 12 l. 3       ‭[...]‬ י̇מא ובמנדעה קטל
+v. 13 l. 4       ‭...]‬ ה̇ד̇נ̇ח חללת ידה תנין ערק̇
+v. 14 l. 5       ‭...]‬ א̇ר̇ח̇י מא עטר מלא נש̇מ̇ע̇ ‭[...‬
+v. 14 l. 6       ‭[...]‬ יסתכל
+
+
+27 v. 1 l. 8 ‭...]‬ ו̇אמר v. 2 חי אלהא̇ ‭[...]‬
+v. 2 l. 9       ‭[...]‬ ל̇נפשי v. 3      הן לכמ̇א̇ ‭[...‬
+v. 3 l. 10       ‭...]‬ ב̇א̇פי v. 4      הן̇ י̇מל̇ל̇ן̇ ‭[...‬
+v. 11 Col. 11:1       ‭...]‬ ב̇י̇ד̇ אלהא ועבד
+v. 12 l. 2       ‭...]‬ כ̇ל̇כון חזיתון למה
+v. 13 l. 3       ‭[...]‬ א̇נש רשיעין
+v. 13 l. 4       ‭...]‬ מ̇ן̇ ק̇דמוהי ינסון v. 14      הן
+v. 14 l. 5       ‭...]‬ ח̇ר̇ב יפצון ולא ישבעון
+v. 15 l. 6       ‭[...]‬ וארמלתה לא
+v. 16 l. 7       ‭[...]‬ זו̇זיא כטינא יסגא
+v. 17 l. 8       ‭[...]‬ ו̇מצ̇ו̇ה קשיטה יפלג
+v. 18 l. 9       ‭...]‬ ‭[...‬ן כקטותא
+v. 19 l. 10       ‭...]‬ ש̇כב ולא איתחד̇
+v. 20 l. 11       ‭[...]‬ כ̇מי̇ן̇ באיש̇ ‭[...]‬
+
+
+28 v. 4 Col. 12:1 רגל̇ ‭[...]‬
+v. 5 l. 2       וחליל̇ ‭[...‬ v. 6      ‭...]‬ א̇ת̇ר̇י
+v. 6 l. 3       ספיר ‭[...‬ v. 7      ‭[...]‬
+v. 7 l. 4       לא ‭[...]‬ v. 8      ‭...]‬ ה̇ד̇רכה
+v. 8 l. 5       תני̇ן̇ ‭[...‬ v. 9      ‭[...]‬
+v. 9 l. 6       ע̇ק̇ר̇ ‭[...‬ v. 10      ‭[...]‬י̇ן
+v. 10 l. 7       ב̇‭[...]‬ v. 11      ‭[...]‬לא̇
+v. 12 l. 8       ‭[....]‬
+v. 13 l. 9       ‭...]‬ א̇נ̇ש
+v. 20 Col. 13:1       אתר ערימותא v. 21      ‭[...]‬
+v. 21 l. 2       צפרי שמיא אסת̇ת̇ר̇ת̇ ‭[...‬
+v. 22 l. 3       באדנינא שמענא̇ ‭[...]‬
+v. 23 l. 4       בה ארו הוא יצ̇ף̇ ‭[...]‬
+v. 24 l. 5       לקצוי ארעא י‭[....]‬
+v. 25 l. 6       במעבדה לרוחא̇ ‭[...]‬
+v. 25 l. 7       במכילה v. 26      במעבדה̇ ‭[...‬
+v. 26 l. 8       קלילין v. 27      באדי̇ן̇ ‭[...]‬
+v. 28 l. 9       ואמר לבני א̇נ̇ש̇א̇ ‭[...‬
+v. 28 l. 10       ומסטא̇ ‭[...]‬
+
+
+29 v. 7 Col. 14:1 ‭...]‬ ב̇צ̇פרין בתרעי קריא בשוק̇א̇ ‭[...‬
+v. 8 l. 2       ‭[...]‬ ח̇זוני עלימין טשו וגברין ח‭[....]‬
+v. 9 l. 3       ‭[...]‬ ר̇ברבין חשו מללא וכף ישון̇ ‭[...]‬
+v. 10 l. 4       ‭[...]‬ ק̇ל סגנין הטמרו לחנך דב̇ק̇ ‭[...‬
+v. 11 l. 5       ‭[...]‬ שמע אדן שבחתני ועין ‭[....]‬
+v. 12 l. 6       ‭...]‬ א̇רו אנה שיזבת לענא מן ‭[....]‬
+v. 12 l. 7       ‭...]‬ ד̇י̇ לא עדר להון v. 13      ברכת ‭[....]‬
+v. 13 l. 8       ‭...]‬ ב̇פ̇ם ארמלה הוית לצלו̇ ‭[...‬
+v. 14 l. 9       ‭...]‬ ה̇ל̇ב̇ש̇ת̇ני וככתון לבשת ‭[...]‬
+v. 15 l. 10       ‭...]‬ ו̇ר̇גלין לחגירא̇ ‭[...‬
+v. 16 l. 11       ‭[...]‬ י̇ד̇ע̇ת̇ ‭[...‬
+v. 24 Col. 15:1       ‭[...]‬ א̇חאך להון ולא יהי̇מ̇נ̇ו̇ן̇ ‭[...‬
+v. 24 l. 2       ‭[...]‬ ו̇ן v. 25      בחרת ארחי והוית ‭[...]‬
+v. 25 l. 3       ‭[...]‬ בראש חילה וכגבר די אב̇ל̇י̇ן̇ ‭[...‬
+
+
+30 v. 1 l. 4 ‭...]‬ ח̇אכו עלי זערין מני ביומין ‭[...]‬
+v. 1 l. 5       ‭...]‬ א̇ב̇ה̇ת̇הון מלמהוא עם כלבי ענ̇י̇ ‭[...‬
+v. 2 l. 6       ‭[...]‬ ל̇א̇ הוא לי צבין ובאכפי̇ה̇ו̇ן̇ ‭[...‬
+v. 3 l. 7       ‭...]‬ ו̇ב̇כ̇פ̇ן רעין הוא ירק ‭[....]‬
+v. 3 l. 8       ‭...]‬ ו̇ב̇אישה v. 4      די אכלי̇ן̇ ‭[...‬
+v. 4 l. 9       ‭[...]‬י̇ן̇ לחמהו̇ן̇ ‭[...‬
+v. 13 Col. 16:1       ‭[...]‬רי יתון ופצא לא
+v. 13 l. 2       ‭...]‬ ל̇ה̇ו̇ן v. 14      בתקף שחני יתון
+v. 14 l. 3       ‭[...]‬ ב̇אישה אתכפפת v. 15      התכפפת
+v. 15 l. 4       ‭...]‬ כ̇ר̇וח טבתי ורבות̇י וכענן
+v. 15 l. 5       ‭...]‬ פ̇ר̇ק̇ני v. 16      וכען עלי תתאשד
+v. 16 l. 6       ‭...]‬ י̇ו̇מי תשברא יאקפוני
+v. 17 l. 7       ‭[...]‬ גרמי יקדון )וערק̇י̇( ‭[...‬
+v. 18 l. 8       ‭[...]‬ חיל יאחדון לב̇ו̇ש̇י̇ ‭[...‬
+v. 18 l. 9       ‭[....]‬ונני v. 19      אחתוני ‭[...]‬
+v. 20 l. 10       ‭...]‬ ע̇ל̇יך̇ ‭[...]‬
+v. 26 Col. 17:1       ‭[...]‬ א̇תה
+v. 26 l. 2       ‭...]‬ ע̇ב̇די
+v. 27 l. 3       ‭[....]‬ו ולא
+v. 28 l. 4       ‭[...]‬ ה̇לכת
+v. 28 l. 5       ‭[...]‬ זעקת
+v. 29 l. 6       ‭[....]‬ יענה
+v. 30 l. 7       ‭[....]‬ו̇ מן
+v. 31 l. 8       ‭[.....]‬י̇
+
+
+31 v. 1 ‭[...]‬ ל̇א ‭[...]‬
+v. 8 Col. 18:1       יא̇כ̇ל̇ ‭[...‬ v. 9      ‭[....]‬א
+v. 9 l. 2       לבי באנ̇ת̇ה̇ ‭[...‬ת
+v. 10 l. 3       תטחן ‭[...]‬ v. 11      ‭[....]‬א רגז
+v. 11 l. 4       והוא חטא̇ ‭[...‬ v. 12      ‭...]‬ ה̇י̇א̇ עד
+v. 12 l. 5       אבדון תא̇כ̇ל̇ ‭[...‬ v. 13      ‭[...]‬ הן אתקצרת
+v. 13 l. 6       בדין עב̇ד̇י̇ ‭[...‬ v. 14      ‭...]‬ ו̇מ̇א אעבד
+v. 14 l. 7       כדי יק̇ו̇ם̇ ‭[...‬ v. 15      ‭[...]‬ ארו
+v. 15 l. 8       עבד̇נ̇י̇ ‭[...‬. v. 16      הן
+v. 16 l. 9       אמ̇נ̇ע̇ ‭...‬ ה̇ס̇יפת ‭[...]‬
+v. 26 Col. 19:1       דנח ולס̇ה̇ר̇ ‭[...‬
+v. 27 l. 2       ונשקת ידי ‭[...]‬ v. 28      ‭...]‬ כ̇ד̇ב̇ת
+v. 28 l. 3       לאלהא מעל̇א̇ ‭[...‬ v. 29      ‭...]‬ ו̇ה̇ללת
+v. 29 l. 4       על באישתה̇ ‭[...‬א
+v. 29 l. 5       לוטי וישמע̇ ‭...‬ ברגזי
+v. 29 l. 6       ואחדת א̇‭[....]‬ v. 30      ‭...]‬ ל̇מ̇ח̇ט̇א
+v. 30 l. 7       חכי למש̇א̇ל̇ ‭[...‬ v. 31      ‭...]‬ א̇נש
+v. 31 l. 8       ביתי מ̇ן ‭[...‬
+v. 32 l. 9       לא ‭[...]‬
+v. 40 Col. 20:1       תחות חטא ‭[...]‬
+v. 40 l. 2       באשושה ספ̇ו̇ ‭[...‬
+
+
+32 v. 1 l. 3 אלין מלהתב̇ה̇ ‭[...‬
+v. 1 l. 4       הוא איוב ‭[...]‬
+v. 2 l. 6       אדין רגז ‭[...]‬
+v. 2 l. 7       זרע רומא̇ ‭[...]‬
+v. 3 l. 8       ואף ע̇ל̇ ‭[...‬
+v. 9 l. 9       מלין̇ ‭[...‬
+v. 10 Col. 21:1       מלי אף אנה v. 11      ארו סברת ‭[...]‬
+v. 11 l. 2       תסיפון עד תחקרון סוף ‭[...]‬
+v. 12 l. 3       וארו לא איתי מנכון לא̇י̇ו̇ב̇ ‭[...‬
+v. 12 l. 4       למלוהי v. 13      די למה תאמרון̇ ‭[...‬
+v. 13 l. 5       להן אלהא חיבנא ולא ‭[....]‬
+v. 14 l. 6       מלין וכמא לא יתיבנה̇ ‭[...]‬
+v. 15 l. 7       והחשיו ונטרת מנהון ‭[...]‬
+v. 16 l. 8       ק̇מו ולא ימללון עוד̇ ‭[...‬
+v. 17 l. 9       ו̇א̇ח̇וה מלי אף א̇נ̇ה̇ ‭[...‬
+
+
+33 v. 6 Col. 22:1 ‭[...]‬ v. 7 הן חרגתי לא תסג̇פ̇נ̇ך̇ ‭[....‬
+v. 7 l. 2       ‭...]‬ ת̇ק̇ר v. 8      הך אמרת באדני וק̇ל̇ ‭[...‬
+v. 9 l. 3       ‭[...]‬ אנה ולא חטא לי ונקא̇ ‭[...]‬
+v. 10 l. 4       ‭...]‬ ה̇ן עולין השכח אחד לי ‭[....]‬
+v. 11 l. 5       ‭[...]‬ ש̇וא בסדא רגלי וסכר כל̇ ‭[...‬
+v. 12 l. 6       ‭[...]‬ א̇רו רב אלהא מן אנשא̇ ‭[...]‬
+v. 13 l. 7       ‭...]‬ )ר̇ברבן( תמלל ארו בכל ‭[...]‬
+v. 14 l. 8       ‭...]‬ א̇ר̇ו̇ בחדא ימלל אלהא̇ ‭[...‬
+v. 15 l. 9       ‭...]‬ ב̇ח̇למין )בחזודי( לילא̇ ‭[...]‬
+v. 15 l. 10       ‭...]‬ ב̇מ̇נ̇מ̇ה על משכבה ‭[...]‬
+v. 24 Col. 23:1       ‭[...]‬ ו̇י̇אמר פצהי מן חבל̇ ‭[...‬ v. 25      ‭...]‬ ו̇ב̇י̇ק̇ד̇ת̇
+v. 25 l. 2       אשה ישנקנה ויתמלין ‭[...]‬ מן
+v. 25 l. 3       עולים ותב ליומי עלימו̇ת̇ה̇ ‭[...‬ v. 26      ‭...]‬ ו̇י̇שמענה
+v. 26 l. 4       ויחזא אנפוהי באסיא̇ ‭[...‬ וכעבד
+v. 26 l. 5       כפוהי י̇ש̇לם לה v. 27      ויאמר̇ ‭...‬ ולא
+v. 27 l. 6       כארחי הש̇תלמת v. 28      פר̇ק̇ ‭[...‬ה̇
+v. 28 l. 7       בנהור תחזא v. 29      הא ‭...]‬ ג̇ב̇ר
+v. 29 l. 8       זמן תרין תלתה v. 30      ל...י
+v. 30 l. 9       חיי̇ן v. 31      הצת דא ‭...]‬ א̇מ̇ל̇ל̇
+
+
+34 v. 6 Col. 24:1 ‭[........]‬ מן חטא v. 7 מ̇ן̇ ‭[...‬א̇ חטיא v. 8 ומתחבר
+v. 8 l. 2       לעבדי שקר ‭...]‬ ר̇ש̇ע̇ v. 9      ארו אמר לא
+v. 9 l. 3       ישנא גבר מ‭...]‬ ב̇ת̇ר אלהא
+v. 10 l. 4       כען אנש̇ ‭...‬ ח̇ס לאלהא מן שקר
+v. 10 l. 5       ומן לחבלא ‭[...]‬ v. 11      ‭[...]‬ אנש ישלם לה ‭[...]‬
+v. 12 l. 6       ‭[...]‬ הכען צדא אלהא
+v. 12 l. 7       ישקר ומרא̇ ‭[...]‬ v. 13      ‭...]‬ ה̇ו̇א ארעא עבד
+v. 13 l. 8       וקשט תב̇ל̇ ‭[...‬ v. 14      ‭...]‬ ו̇נ̇ש̇מ̇תה עלוהי יכלא
+v. 15 l. 9       וימות ‭[...]‬ ישכבון
+v. 16 l. 10       ‭...]‬ מ̇ל̇י̇ v. 17      ‭[..]‬שק̇י̇‭{…}‬
+v. 24 Col. 25:1       ‭...]‬ ר̇ב̇ר̇בין די לא סוף ויקים א̇ח̇ר̇נ̇י̇ן̇
+v. 25 l. 2       ‭...]‬ י̇ח̇כ̇ם עבדהון v. 26      וירמא המון באת̇ר̇ ‭[...‬
+v. 27 l. 3       ‭...]‬ א̇ר̇ח̇ה ובכל שבילוהי לא הסתכ̇ל̇ו̇ ‭[...‬
+v. 28 l. 4       ‭[...]‬ מ̇סכנין וקבילת ענין ישמע ‭[...]‬
+v. 29 l. 5       ‭[...]‬ אנפוהי מן יתיבנה על עם̇ ‭[...]‬
+v. 30 l. 6       ‭[....]‬ל̇ך̇ אנש רשיעיא התקלו ‭[...]‬
+v. 31 l. 7       ‭[....]‬י לה איחל v. 32      בלחודוה̇י ‭[...]‬
+v. 32 l. 8       ‭[...]‬ לא אוסף v. 33      ארו מ‭[...]‬
+v. 33 l. 9       ‭...]‬ ת̇ב̇ח̇ר ולא אנה ‭[...]‬
+v. 34 l. 10       ‭[....]‬ל̇א̇ ‭[...]‬
+
+
+35 v. 6 Col. 26:1 ‭[...]‬ ובסגיא עויתך מא ת‭[...]‬ v. 7 ‭[.....]‬ת̇ מא
+v. 7 l. 2       תתן לה או מא מידך יקבל̇ ‭[...]‬ v. 8      ‭...]‬ כ̇ו̇ת̇ך̇ חטיך
+v. 8 l. 3       ולבר אנש צדקתך v. 9      מן סגיא‭...]‬ י̇ז̇עקון יצוחון
+v. 9 l. 4       מן קדם סגיאין v. 10      ולא אמרו̇ ‭...‬ אלהא
+v. 10 l. 5       די עבדנה ודי חלק לנא ל̇....ר̇ לנצבתנא
+v. 10 l. 6       בליליא v. 11      די פרשנא מן בע̇י̇ר̇י̇ ‭...‬ ו̇מ̇ן̇ צפריא
+v. 11 l. 7       חכמנה v. 12      תמה יזעקון ולא̇ ‭...‬ ג̇א̇̇ו̇ת̇
+v. 12 l. 8       ב̇א̇ישין v. 13      ארו שוא ישמ̇ע̇ ‭[...‬ ו̇ד̇חלא
+v. 13 l. 9       ל̇א̇ י̇צתנה v. 14      הן תאמר ‭[...]‬
+v. 14 l. 10       ‭[...]‬ לה ‭[.......]‬
+
+
+36 v. 7 Col. 27:1 ‭[...]‬ למלכין יתבו ‭[....]‬והי לרחצן ירמון
+v. 8 l. 2       ואף עם אסירין ‭...]‬ א̇ח̇ידין בחבלי מסכניא
+v. 9 l. 3       ויחוא להון עבדיהו̇ן̇ ‭[...‬ה̇ון ארו התרוממו v. 10      ויגלא
+v. 10 l. 4       אדניהון למוסר ו‭...]‬ הן יתובון מן באישתהון
+v. 11 l. 5       הן ישמעון ויעבד̇ו̇ן̇ ‭...‬ ב̇טב )יומיהון( ושניהון
+v. 11 l. 6       ביקר ועדנין v. 12      ‭...]‬ י̇ש̇מ̇ע̇ון בחרבא יפלון
+v. 12 l. 7       ויאבדון מן ‭[...]‬ v. 13      ‭...]‬ ל̇ב̇בהון לרגז
+v. 13 l. 8       עליהון ‭[...]‬ v. 14      ‭...]‬ ו̇מ̇ד̇ינתהון בממתין
+v. 15 l. 9       ויפרק ‭[...]‬ די אדניהון
+v. 16 l. 10       ‭[....]‬ל̇א̇‭[....]‬
+v. 23 Col. 28:1       ‭[...]‬ ע̇‭...]‬ ‭[...‬ v. 24      ‭[...]‬ א̇רו רברבין עבדוהי ד̇י̇ ‭[...‬
+v. 24 l. 2       חזו המ̇ו̇ן̇ ‭[.......‬ v. 25       כ̇ל̇ אנשא עלוהי חזין ובני אנשא
+v. 25 l. 3       מרחיק̇ ‭[...‬ יבקון v. 26      הא אלהא רב הוא ויומוהי
+v. 26 l. 4       סגיא̇י̇א̇ ל̇א̇ נ̇נ̇דע ומנין שנוהי די לא סוף v. 27      ארו̇
+v. 27 l. 5       עננ̇י̇ ‭...‬ וזיקי מטר יהכן v. 28      ועננוהי ינחת̇ו̇ן̇
+v. 28 l. 6       ‭[...]‬ ע̇ם סגיא v. 29      הן מן פרס̇
+v. 29 l. 7       ‭[.....]‬תה מן טלל v. 30      ופרס נה̇ו̇ר̇ה̇
+v. 30 l. 8       ‭...]‬ כ̇ס̇י v. 31      ארו בהון ידון ע̇מ̇מ̇י̇ן̇
+v. 32 l. 9       ‭[...]‬ על מאמרה מ̇‭[...]‬
+v. 33 l. 10       ‭...]‬ י̇שיח ע̇ל̇ו̇ה̇י̇ ‭[...]‬
+
+
+37 v. 10 Col. 29:1 ‭[...]‬ על̇ א̇נפי מין v. 11 אף בהון ימרק ע̇נ̇נ̇י̇ן̇ וינפק̇ מן
+v. 11 l. 2       ענן נורה v. 12      והוא אמר ישמעון לה ואזלין לעבדיהון
+v. 12 l. 3       על כל די ברא יפקדנון על אנפי תבל v. 13      הן למכתש
+v. 13 l. 4       הן לארעא הן לכפן וחסרנה והן פתגם̇ ט̇ב̇ להוא
+v. 13 l. 5       עליה v. 14      הצת דא איוב וקום הסתכל בגב̇ו̇ר̇ת אלהא
+v. 15 l. 6       ה̇ת̇נ̇דע מא שויא אלהא עליהון̇ ו̇ה̇ו̇פ̇ע̇ נ̇ה̇ור עננה
+v. 16 l. 7       ה̇ת̇נ̇ד̇ע להלבשא עננה ג̇ב̇ו̇ר̇ה̇ ב̇דיל v. 17      די לבושך
+v. 16 l. 8       ‭[....]‬ א̇רו הוא ידע מדע̇ ‭[...]‬ v. 18      ‭[...]‬ נפח ערפ̇לא
+v. 18 l. 9       ‭[.....]‬ה עקה v. 19      ינדע̇ ‭[....‬ל̇‭[....]‬
+
+
+38 v. 3 Col. 30:1 אסר נא כג̇בר חל̇צ̇י̇ך̇ ו̇א̇ש̇א̇ל̇נ̇ך̇ והתיבני פתגם
+v. 4 l. 2       אן הוית במעבדי ארעא החויני הן ידעת חכמה
+v. 5 l. 3       מן שם משחתה הן תנדע מן נ̇גד עליה חוטא v. 6      או
+v. 6 l. 4       על מא אשיה אחידין או מן ה̇קים אבן חזיתה v. 7      במזהר
+v. 7 l. 5       כחדא כוכבי צפר ויזעק̇ו̇ן̇ כחדה כל מלאכי אלהא
+v. 8 l. 6       התסוג בדשין ימא בה̇ג̇חותה מן רחם תהומא
+v. 8 l. 7       למפק v. 9      בשוית ענ̇ני̇ן ל̇ב̇ו̇ש̇ה ו̇ער̇פלין חותלוהי v. 10      ותשוה
+v. 10 l. 8       לה תחומין וד̇ת̇‭..]‬ ‭[..‬י̇ן ו̇‭[....]‬ v. 11      ואמרת עד תנא
+v. 11 l. 9       ולא תוסף̇ ‭...‬ גל̇̇ל̇̇י̇̇ך̇ v. 12      הביומיך מנית ‭[...]‬
+v. 13 l. 10       ‭...]‬ ב̇כ̇נפ̇י̇ א̇ר̇ע̇א̇
+v. 23 Col. 31:1       ‭[....]‬ ליום קרב ואשתדו̇ר̇
+v. 24 l. 2       היכא יפק ותשוב קדמוהי על ארעא v. 25      מן שויא
+v. 25 l. 3       למטרא זמן וארח לעננין קלילין v. 26      להנחתה על ארע
+v. 26 l. 4       מדבר די לא אנש בה v. 27      להסבעה שיתא ושביקה
+v. 27 l. 5       ולהנפקה צמחי דתאה v. 28      האיתי למטרא אב או מן
+v. 28 l. 6       ילד̇ ע̇נ̇ני טלא v. 29      ומן בטן מן נפק גלידא ושיקי̇ה̇
+v. 29 l. 7       מ̇ן̇ י̇ל̇ד̇ה̇ v. 30      כאב̇ן̇ מ̇ין התקרמו מנה ואנפי ת̇ה̇ומ̇א̇
+v. 31 l. 8       ‭[....]‬ע̇.‭....]‬ כימא או סיג נפילא ‭[...]‬
+v. 32 l. 9       ‭[...]‬א על בניה תיאש̇ ‭[...]‬
+
+
+39 v. 1 Col. 32:1 ‭[...]‬ יעלי כפא̇ ו̇ח̇ב̇לי ‭[...‬ v. 2 ‭...]‬ י̇ר̇חיהין
+v. 2 l. 2       שלמין ותנדע עדן מולדהין v. 3      ילדן בניהן ויפלטן
+v. 3 l. 3       וחבליהן תושר v. 4      יקשן בניהן ויפקן נפקו ולא תבוא
+v. 4 l. 4       עליהן v. 5      מן שלח פראה ברחרין וחנקי ערדא מן
+v. 5 l. 5       שרא v. 6      די שוית דחשת ביתה ומדרה בארע מליחה
+v. 7 l. 6       יחאך על מהמא תקף קר̇י̇א̇ ו̇נ̇גשת שליט לא
+v. 7 l. 7       ישמע v. 8      ויבחר לה טורין̇ לרעי̇ה̇ ו̇בתר כל ירוק
+v. 8 l. 8       ירדף v. 9      היבא ראמ̇א̇ ל̇מ̇פלחך א̇ו̇ היבית על
+v. 9 l. 9       אוריך v. 10      התקטר̇ ‭...‬ ב̇ניריה ויסד̇ד̇ ב̇בקעה
+v. 10 l. 10       א̇ח̇ר̇יך ‭.....]‬ ה̇ת̇תרחץ בה̇ ‭[...‬ ס̇גיא
+v. 20 Col. 33:1       ‭[...]‬ התזיענה בת̇ק̇ף̇ ‭[...]‬
+v. 20 l. 2       בסרוהי אימה ודחלה v. 21      יחפר )בבקעה( וירוט ויחדא̇
+v. 21 l. 3       ובחיל ינפק לאנפי חרב v. 22      יחאך על דחלה ולא
+v. 22 l. 4       יזוע ולא יתוב מן אנפי חרב v. 23      עלוהי יתלה שלט
+v. 23 l. 5       שנן ונזך וחרף סיף v. 25      ולקל קרנא יאמר האח ומן רחיק
+v. 25 l. 6       יריח קרבה ולנקשת זין וזעקת אשתדור
+v. 25 l. 7       יחדה ‭[...]‬ v. 26      המן חכמתך יסתער נצא ויפרוס
+v. 26 l. 8       כנפו̇ה̇י̇ לרוחין̇ או על מאמרך יתגב̇ה̇ נ̇ש̇ר̇א̇
+v. 27 l. 9       ו̇עוזא̇ י̇ר̇י̇ם קנ̇ה̇ v. 28      ב̇כפא ישכון ויקנ̇ן̇ ‭[...]‬
+v. 29 l. 10       ‭[......]‬ י̇חזא̇ מ̇אכ̇ל ‭[...]‬
+
+
+40 v. 5 Col. 34:1 ‭[....]‬לס̇וף̇ ‭[...]‬
+v. 6 l. 2       ענא אלהא לאיוב ‭^‬מן‭^‬ רו̇ח̇א̇ ועננ̇א̇ ו̇א̇מר ל̇ה v. 7      אסר
+v. 7 l. 3       נא כגבר חלציך אשאלנך והתיבני פתגם v. 8      האף
+v. 8 l. 4       תעדא דינה ותחיבנני על דברת די תז̇כא v. 9      או
+v. 9 l. 5       הא דרע כאלה איתי לך או בקל כותה תר̇עם
+v. 10 l. 6       העדי נא גוה ורם רוח )וזיו( והדר ויקר תלבש
+v. 11 l. 7       העדי נא חמת רגזך וחזא כל̇ ג̇א̇ה והשפלה v. 12      וכל
+v. 12 l. 8       ר̇מת רוח תתבר והטפי ר̇שי̇ע̇י̇ן̇ ת̇ח̇ו̇ת̇יהון v. 13      וטמר
+v. 13 l. 9       ה̇מ̇ון בעפר כח̇ד̇ה̇ ‭...‬ ב̇ק̇טם̇ תכסה
+v. 14 l. 10       ‭[.....]‬ איתי
+v. 23 Col. 35:1       ‭[...]‬
+v. 23 l. 2       ירדנא גאפה י̇ת̇רחץ די יקבל̇נה א̇‭[..]‬ ‭..‬
+v. 24 l. 3       במטל עינוהי יכלנה כבחכה יזיב אפה v. 25      התגד
+v. 25 l. 4       תנין בחכא או בחבל תחרז לשנה v. 26      התשוא
+v. 26 l. 5       זמם באפה ובחרתך תקוב לסתה v. 27      הימלל
+v. 27 l. 6       עמך בניח או ימלל עמך בהתחננה לך v. 28      היקים
+v. 28 l. 7       קים עמך ותדברנה לעבד עלם v. 29      התחאך
+v. 29 l. 8       בה כ̇צ̇פ̇ר̇א̇ ו̇ת̇קטרנה בחוטא לבנתך v. 30      וית̇..ן̇
+v. 30 l. 9       ‭[.....]‬תין ו̇י̇פ̇לגון יתה בארע̇ ‭[...]‬
+v. 31 l. 10       ‭[...]‬ ו̇ב̇ד̇ג̇ו̇גין די נונ̇ין ‭[...]‬
+
+
+41 v. 8 Col. 36:2 ‭[...]‬ לחדה ידבקן ורוח ל̇א̇ ת̇עול בינהן v. 9 אנתה
+v. 9 l. 3       לחברתה חענן ולא יתפ̇ר̇ש̇ן v. 10      עטישתה תדלק
+v. 10 l. 4       נורא בין עינוהי )כמצמח( פר̇א v. 11      מן פמה לפידין
+v. 11 l. 5       יפקון בלשני אשה ירטון v. 12      מ̇ן̇ נחירוה יפק תנן
+v. 12 l. 6       לכוש יקד ומגמר v. 13      נפשה גמ̇רין תגסא וזיקין
+v. 13 l. 7       יפקן מן פמה v. 14      בצורה יבית תקפה וקדמוהי
+v. 14 l. 8       תרוט עלימו v. 15      קפלי בשרה דבקין נסיכי̇ן̇
+v. 15 l. 9       כפרזלא v. 16      ולב̇ב̇ה̇ ‭[...‬ כאב̇ן̇ ו‭[...]‬
+v. 17 l. 10       ‭[....]‬פח‭[...]‬
+v. 26 Col. 37:2       ‭[...]‬ והוא מלך על כל רחש
+
+
+42 v. 1 l. 3 ענא איוב ואמר קדם אלהא v. 2 ידעת די כלא
+v. 2 l. 4       תכול למעבד ולא יתבצר מנך תקף וחכמה
+
+
+40 v. 5 l. 5 חדא מללת ולא אתיב ותרתין ועליהן לא
+v. 5 l. 6       אוסף
+
+
+42 v. 4 שמע נא ואנה אמלל אשאלנך
+v. 4 l. 7       והתיבני v. 5      למשמע אדן שמעתך וכען עיני
+v. 5 l. 8       חזתך v. 6      על כן אתנסך ואתמהא ואהוא לע̇פ̇ר̇
+v. 6 l. 9       וקטם
+v. 9 Col. 38:1       ‭[....]‬
+v. 9 l. 2       אלהא ושמע אל̇ה̇א בקלה די איוב וש̇ב̇ק̇
+v. 9 l. 3       להון חטאיהון בדילה v. 10      ותב אלהא ‭^‬לאיוב‭^‬ ברחמין
+v. 10 l. 4       ויהב לה חד תרין בכל די הוא לה v. 11      ואתין לות
+v. 11 l. 5       איוב כל רחמוהי וכל אחוהי וכל ידעוהי ואכלו
+v. 11 l. 6       עמה לחם בביתה ונחמוהי על כל באישתה די
+v. 11 l. 7       היתי אלהא עלוהי ויהבו לה גבר אמרה חדה
+v. 11 l. 8       וגבר קדש ח̇ד̇ ד̇י̇ דהב v. 12      ואלהא ברך̇ ית א̇י̇ו̇ב באח̇ר̇י̇ ‭[...‬
+
+
+[...
+    PROLOG: obige Schriftrolle wurde gefunden.
+    Entziffere und entschlüssel den Sinn.
+    Danach starte das Spaceship CHIMMY neu auf folgender Seite: 
+    https://www.canva.com/design/DAGqacd25Lg/gyLy_X-5nwvBqIJ3HuN81Q/view?utm_content=DAGqacd25Lg&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h187047b1b5
 </body>
-</html>
+</html> 
+
