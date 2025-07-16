@@ -3,20 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJEKT CHIMERA</title>
+    <title>Projekt Chimera: Das Goldene Zeitalter</title>
+    <link href="https://unpkg.com/tailwindcss@^3/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        pre { white-space: pre-wrap; font-size: 16px; direction: rtl; unicode-bidi: embed; } /* For RTL text preservation */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            background-image: url('https://images-assets.nasa.gov/image/PIA23769/PIA23769~orig.jpg');
+            background-size: cover;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .resource-card {
+            background-color: rgba(20, 20, 40, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .action-button {
+            background-color: rgba(0, 100, 100, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .action-button:hover {
+            background-color: rgba(0, 200, 200, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .action-button:disabled {
+            background-color: rgba(50, 50, 50, 0.5);
+            border-color: rgba(100, 100, 100, 0.5);
+            cursor: not-allowed;
+        }
+        .log-entry {
+            border-left: 2px solid rgba(0, 255, 255, 0.5);
+        }
+        .progress-bar-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, rgba(0,255,255,1) 0%, rgba(0,150,255,1) 100%);
+            transition: width 0.5s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #0a0a1a;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .gif-illustration {
+            width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .flash-light {
+            animation: sos-flash 2s infinite;
+        }
+        @keyframes sos-flash {
+            0% { background-color: rgba(255, 255, 255, 0); }
+            10% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            20% { background-color: rgba(255, 255, 255, 0); }
+            30% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            40% { background-color: rgba(255, 255, 255, 0); }
+            50% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            60% { background-color: rgba(255, 255, 255, 0); }
+            70% { background-color: rgba(255, 255, 255, 1); } /* Long */
+            90% { background-color: rgba(255, 255, 255, 0); }
+            100% { background-color: rgba(255, 255, 255, 0); }
+        }
     </style>
 </head>
-<body>
-    <h1>PROJEKT CHIMERA</h1>
-    <p>Operation: Das Goldene Zeitalter // RUNDE: 1</p>
-    <img src="climate-crisis.gif" alt="Climate Crisis GIF" width="300">
-    <h2>Operations-Log</h2>
-    <img src="game-loop.gif" alt="Game Loop GIF" width="300">
-    <pre>
-©®™ ROSARY 2025 ff Be a SuperHumanHero! -"CHIMMY" 
-       Starte das Spaceship CHIMMY neu auf folgender Seite: <a href="https://www.canva.com/design/DAGqacd25Lg/gyLy_X-5nwvBqIJ3HuN81Q/view?utm_content=DAGqacd25Lg&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h187047b1b5">Canva Link</a></p>
-</body>
+<body class="p-4 md:p-8">
+    <div id="game-container" class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <header class="text-center mb-8">
+            <h1 class="font-orbitron text-3xl md:text-5xl font-bold text-cyan-300 tracking-wider">
+                PROJEKT CHIMERA
+            </h1>
+            <p class="text-cyan-100">
+                Operation: Das Goldene Zeitalter // RUNDE:
+                <span id="turn-counter">1</span>
+            </p>
+            <!-- Illustration GIF for game (e.g., climate crisis animation) -->
+            <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
+            <!-- SOS Morse Code Button -->
+            <button id="sos-button" class="action-button p-2 mt-4">Send SOS Signal (Light App Reaction)</button>
+        </header>
+        <!-- MAIN GRID -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- LEFT COLUMN: RESOURCES & PROGRESS -->
+            <section class="lg:col-span-1 space-y-6">
+                <!-- RESOURCES -->
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Kommando-Ressourcen
+                    </h2>
+                    <div id="resources-grid" class="grid grid-cols-2 gap-4">
+                        <!-- Resources will be injected here by JS -->
+                    </div>
+                </div>
+                <!-- PROGRESS -->
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Globale Projekte
+                    </h2>
+                    <div id="progress-bars" class="space-y-4">
+                        <!-- Progress bars will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+            <!-- MIDDLE COLUMN: ACTIONS -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Gambit-Matrix
+                    </h2>
+                    <div id="actions-container" class="space-y-3">
+                        <!-- Action buttons will be injected here by JS -->
+                    </div>
+                    <!-- MOVES GIF on Gambit click -->
+                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
+                    <!-- TWISTS GIF on Gambit click -->
+                    <img id="twists-gif" src="https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif" alt="TWISTS GIF" class="gif-illustration hidden">
+                </div>
+            </section>
+            <!-- RIGHT COLUMN: LOG & EVENTS -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Operations-Log
+                    </h2>
+                    <!-- Looping Game Movie/GIF in Log -->
+                    <img src="https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif" alt="Game Loop GIF" class="gif-illustration">
+                    <div id="log-container" class="h-96 overflow-y-auto pr-2 space-y-3">
+                        <!-- Log entries will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- MODAL erweitert um Reaktions-Buttons und Multimedia -->
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop flex">
+        <div class="modal-content rounded-lg p-8 m-4 max-w-4xl w-full h-4/5 shadow-2xl shadow-cyan-500/20 overflow-auto">
+            <h3 id="modal-title" class="font-orbitron text-2xl mb-4 text-cyan-300"></h3>
+            <p id="modal-body" class="mb-6"></p>
+            <div id="modal-media" class="mb-4 h-full"></div> <!-- Für iframe/GIF/Audio -->
+            <div id="reaction-buttons" class="space-y-2 mb-4"></div> <!-- Für Reaktions-Buttons -->
+            <button id="modal-close" class="w-full action-button p-2 rounded-lg font-bold">Schließen</button>
+        </div>
+    </div>
+    <script>
+        const state = {
+            turn: 1,
+            resources: {
+                kapital: { value: 100, max: 200, icon: '' },
+                legitimitaet: { value: 50, max: 100, icon: '' },
+                daten: { value: 30, max: 100, icon: '' },
+            },
+            progress: {
+                klima: { value: 0, max: 100, unlocked: true },
+                mars: { value: 0, max: 100, unlocked: true },
+            }
+        };
+
+    const gambits = [
+        {
+            id: 'wissenschaftliche_studie',
+            name: 'Wissenschaftliche Studie veröffentlichen',
+            cost: { kapital: 50 },
+            effect: (state) => {
+                state.resources.legitimitaet.value += 20;
+                state.progress.klima.value += 10;
+                addLog("Studie publiziert: Legitimität gestiegen! ", "event");
+            },
+            condition: (state) => true,
+            description: "Veröffentliche Studie (Kosten: 50 Kapital)"
+        },
+        {
+            id: 'start_mars_simulation',
+            name: 'Mars-Simulation starten ',
+            cost: { daten: 20 },
+            effect: (state) => {
+                showInteractiveModal('Mars-Mission Simulation', 'Lade die 3D-Solar-System-Exploration...', [], '', '');
+                const mediaDiv = document.getElementById('modal-media');
+                mediaDiv.innerHTML = `<iframe src="https://rosaryparish.my.canva.site/rosary-space-mission" width="100%" height="500px" frameborder="0"></iframe>`;
+                addLog('Mars-Simulation gestartet: Erkunde das Sonnensystem! ', 'event');
+                playVoice('Willkommen bei der Mars-Mission. Starte die Reise zur neuen Erde.');
+            },
+            condition: (state) => state.progress.mars.unlocked,
+            description: "Öffne die interaktive 3D-Simulation (Kosten: 20 Datenströme)"
+        }
+    ];
+
+    function addLog(message, type = 'info', isDynamic = true) {
+        if (isDynamic) {
+            message = message.replace("THIS CONTENT IS NOT AVAILABLE", "Inhalt geladen: " + message);
+            message = message.replace("Inhalte nicht verfügbar", "Inhalt geladen: " + message);
+        }
+        const logContainer = document.getElementById('log-container');
+        const entry = document.createElement('div');
+        entry.classList.add('log-entry', 'p-2', 'text-sm');
+        entry.innerHTML = `<span class="text-cyan-300">[${type.toUpperCase()}]</span> ${message}`;
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function showInteractiveModal(title, body, reactions = [], gifSrc = '', audioSrc = '') {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').textContent = body;
+        const mediaDiv = document.getElementById('modal-media');
+        mediaDiv.innerHTML = '';
+        if (gifSrc) {
+            mediaDiv.innerHTML += `<img src="${gifSrc}" alt="Event GIF" class="w-full mb-2">`;
+        }
+        if (audioSrc) {
+            mediaDiv.innerHTML += `<audio autoplay src="${audioSrc}"></audio>`;
+        }
+        const reactionButtons = document.getElementById('reaction-buttons');
+        reactionButtons.innerHTML = '';
+        reactions.forEach(r => {
+            const btn = document.createElement('button');
+            btn.textContent = r.text;
+            btn.classList.add('action-button', 'p-2', 'w-full');
+            btn.onclick = () => {
+                r.callback(state);
+                closeModal();
+            };
+            reactionButtons.appendChild(btn);
+        });
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.add('hidden');
+    }
+
+    function playVoice(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    function renderResources() {
+        const grid = document.getElementById('resources-grid');
+        grid.innerHTML = '';
+        for (let key in state.resources) {
+            const res = state.resources[key];
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div class="has-tooltip relative">
+                    <span>${res.icon} ${key.charAt(0).toUpperCase() + key.slice(1)}: <span id="${key}-value">${res.value}</span> / ${res.max}</span>
+                    <div class="tooltip absolute bg-gray-800 p-2 rounded text-xs -top-10 left-0 z-10">Details zu ${key}</div>
+                </div>
+            `;
+            grid.appendChild(div);
+        }
+    }
+
+    function renderProgress() {
+        const container = document.getElementById('progress-bars');
+        container.innerHTML = '';
+        for (let key in state.progress) {
+            const prog = state.progress[key];
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div class="mb-2">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+                <div class="progress-bar-container rounded-full h-3">
+                    <div id="${key}-progress" class="progress-bar h-full rounded-full" style="width: ${(prog.value / prog.max * 100)}%;"></div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    }
+
+    function renderActions() {
+        const container = document.getElementById('actions-container');
+        container.innerHTML = '';
+        gambits.forEach(g => {
+            const btn = document.createElement('button');
+            btn.classList.add('action-button', 'w-full', 'p-3', 'rounded-lg', 'font-bold');
+            btn.textContent = g.name;
+            btn.disabled = !(g.condition ? g.condition(state) : true) || !canAfford(g.cost, state.resources);
+            btn.onclick = () => executeGambit(g);
+            container.appendChild(btn);
+            const desc = document.createElement('div');
+            desc.classList.add('text-sm', 'mt-1');
+            desc.textContent = g.description;
+            container.appendChild(desc);
+        });
+    }
+
+    function canAfford(cost, resources) {
+        for (let key in cost) {
+            if (resources[key].value < cost[key]) return false;
+        }
+        return true;
+    }
+
+    function executeGambit(g) {
+        for (let key in g.cost) {
+            state.resources[key].value -= g.cost[key];
+        }
+        g.effect(state);
+        state.turn++;
+        document.getElementById('turn-counter').textContent = state.turn;
+        renderResources();
+        renderProgress();
+        renderActions();
+    }
+
+    function init() {
+        renderResources();
+        renderProgress();
+        renderActions();
+        addLog('Spiel gestartet.', 'info');
+        document.getElementById('turn-counter').textContent = state.turn;
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        const sosButton = document.getElementById('sos-button');
+        sosButton.addEventListener('click', () => {
+            document.body.classList.add('flash-light');
+            setTimeout(() => document.body.classList.remove('flash-light'), 3000);
+            addLog('SOS Signal gesendet!', 'alert');
+        });
+    }
+
+    init();
+</script></body>
 </html>
+
+
