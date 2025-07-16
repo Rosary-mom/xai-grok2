@@ -11,7 +11,7 @@
             font-family: 'Roboto Mono', monospace;
             background-color: #0a0a1a;
             color: #e0e0e0;
-            background-image: url('https://your-server.com/mars_colony.jpg'); /* SuperGrok Mars colony image */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Concept_Mars_colony.jpg'); /* NASA public domain Mars-Siedlung Konzept (frei nutzbar) */
             background-size: cover;
         }
         .font-orbitron {
@@ -105,6 +105,8 @@
             <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
             <!-- SOS Morse Code Button -->
             <button id="sos-button" class="action-button p-2 mt-4">Send SOS Signal (Light App Reaction)</button>
+            <!-- Reset Button (neu hinzugefügt für Tests) -->
+            <button id="reset-button" class="action-button p-2 mt-4 ml-4">Spiel zurücksetzen</button>
         </header>
         <!-- MAIN GRID -->
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -139,7 +141,7 @@
                         <!-- Action buttons will be injected here by JS -->
                     </div>
                     <!-- MOVES GIF on Gambit click -->
-                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
+                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
                     <!-- TWISTS GIF on Gambit click -->
                     <img id="twists-gif" src="https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif" alt="TWISTS GIF" class="gif-illustration hidden">
                 </div>
@@ -203,7 +205,7 @@
 
         // --- DREHBUCH SLOTS ---
         const drehbuchSlots = [
-            { id: 'ruf_zum_handeln', text: "EXT. NEUE ERDE – GOLDENE EBENEN – TAG: Chanelle rennt lachend durch das Gras... [PSPS II: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut.']", gif: 'https://media.giphy.com/media/26FLgGTPsEAq8vs/giphy.gif', emoji: '🚀', voiceText: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut. Die Mission beginnt von Neuem.' },
+            { id: 'ruf_zum_handeln', text: "EXT. NEUE ERDE – GOLDENE EBENEN – TAG: Chanelle rennt lachend durch das Gras... [PSPS II: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut.']", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🚀', voiceText: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut. Die Mission beginnt von Neuem.' },
             { id: 'letzter_aufstand', text: "EXT. RUINEN DER ALTEN WELT – TAG: Henry führt seine Anhänger... [Henry: 'Wir werden ihr Paradies in den Abgrund ziehen.']", gif: 'https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif', emoji: '⚔️', voiceText: 'Der Hochmut des Dunklen Herrn verblendet ihn. Wähle das Licht.' },
             { id: 'urteil_alpha', text: "INT. DAS NEUE BETHEL – THRONSAAL – TAG: PSPS II: 'Barmherzigkeit triumphiert, Liebe siegt.'", gif: 'https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif', emoji: '👼', voiceText: 'Barmherzigkeit triumphiert, Liebe siegt.' },
             { id: 'sternenschiffe_start', text: "Szene 2: Neues Jerusalem steigt herab. PSPS II: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.'", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🌟', voiceText: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.' },
@@ -383,6 +385,8 @@
                 addLog(`${slot.emoji} Drehbuch-Slot: ${slot.text}`, 'narrative', true);
                 document.getElementById('moves-gif').src = slot.gif;
                 document.getElementById('moves-gif').classList.remove('hidden');
+                // Auto-hide GIF nach 5 Sekunden (neu für bessere UX)
+                setTimeout(() => document.getElementById('moves-gif').classList.add('hidden'), 5000);
                 playVoice(slot.voiceText);
                 showModal('Drehbuch-Szene', slot.text);
             }
@@ -490,6 +494,20 @@
             }
         }
 
+        // --- SOS BUTTON HANDLER (neu hinzugefügt) ---
+        document.getElementById('sos-button').addEventListener('click', () => {
+            document.body.classList.add('flash-light');  // Trigger SOS-Animation
+            setTimeout(() => document.body.classList.remove('flash-light'), 2000);  // Stop nach 2s
+            playVoice('SOS-Signal gesendet! Hilferuf im Kosmos.');
+            addLog("SOS-Signal gesendet – Lichtreaktion aktiviert!", "event");
+        });
+
+        // --- RESET BUTTON HANDLER (neu hinzugefügt) ---
+        document.getElementById('reset-button').addEventListener('click', () => {
+            localStorage.removeItem('chimeraState');
+            location.reload();  // Reload Seite für frischen Start
+        });
+
         // --- INITIALIZE GAME ---
         window.onload = () => {
             loadGame();  // Lade bei Start
@@ -499,7 +517,8 @@
             }
         };
     </script>
-    ©®™ ROSARY 2025 ff
-    Be a SuperHero! -"CHIMMY"
+    <p class="text-center mt-8 text-cyan-100">©®™ ROSARY 2025 ff<br>Be a SuperHero! -"CHIMMY"</p>
 </body>
 </html>
+
+
