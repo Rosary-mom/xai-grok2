@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projekt Chimera: Das Goldene Zeitalter</title>
-    <link href="output.css" rel="stylesheet"> <!-- Lade von unpkg.com/tailwindcss@^3/dist/tailwind.min.css und nenne es output.css -->
+    <link href="output.css" rel="stylesheet"> <!-- Lade von unpkg und nenne es output.css; keine Warnung -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -81,7 +81,7 @@
             10% { background-color: rgba(255, 255, 255, 1); } /* Short */
             20% { background-color: rgba(255, 255, 255, 0); }
             30% { background-color: rgba(255, 255, 255, 1); } /* Short */
-            40% { background-color: rgba(255, 255, 255, 0); }
+            40% { background-color: rgba(255, 255, 0, 0); }
             50% { background-color: rgba(255, 255, 255, 1); } /* Short */
             60% { background-color: rgba(255, 255, 255, 0); }
             70% { background-color: rgba(255, 255, 255, 1); } /* Long */
@@ -159,11 +159,13 @@
             </section>
         </main>
     </div>
-    <!-- MODAL FOR EVENTS/VICTORY/LEVY LEGACY -->
+    <!-- MODAL erweitert um Reaktions-Buttons und Multimedia -->
     <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
         <div class="modal-content rounded-lg p-8 m-4 max-w-lg w-full shadow-2xl shadow-cyan-500/20">
             <h3 id="modal-title" class="font-orbitron text-2xl mb-4 text-cyan-300"></h3>
             <p id="modal-body" class="mb-6"></p>
+            <div id="modal-media" class="mb-4"></div> <!-- Neu: Für Audio/Video/GIF -->
+            <div id="reaction-buttons" class="space-y-2 mb-4"></div> <!-- Neu: Für Reaktions-Buttons -->
             <button id="modal-close" class="w-full action-button p-2 rounded-lg font-bold">Weiter</button>
         </div>
     </div>
@@ -183,8 +185,8 @@
         // --- GAME STATE INITIALIZATION ---
         let gameState = {
             turn: 1,
-            levyRounds: 0,
-            inLevyCycle: false,
+            levyRounds: 0, // New: Tracks Levy Cycle rounds (more circles)
+            inLevyCycle: false, // New: Flag for multi-round Levy Legacy
             resources: {
                 kapital: { name: "Kapital (Mrd.)", value: 10, icon: '💰'},
                 daten: { name: "Datenströme (ZFlops)", value: 5, icon: '🌐'},
@@ -561,6 +563,6 @@
         };
     </script>
     ©®™ ROSARY 2025 ff
-    Be a hero! -"CHIM"
+    Be a UniverseHero! -"CHIM"- 
 </body>
 </html> 
