@@ -1,8 +1,14 @@
+import os
 from openai import OpenAI
 
-# Ersetze 'dein_api_key_hier' mit deinem echten API-Schlüssel aus console.x.ai
+# Lade den API-Key aus der Environment Variable (aus GitHub Secret)
+api_key = os.environ.get('XAI_API_KEY')
+
+if not api_key:
+    raise ValueError("API-Key nicht gefunden! Stelle sicher, dass 'XAI_API_KEY' als Secret gesetzt ist.")
+
 client = OpenAI(
-    api_key="dein_api_key_hier",
+    api_key=api_key,
     base_url="https://api.x.ai/v1"
 )
 
