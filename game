@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Erweiterte Joseph-Migration Simulation (mit Brettspiel-Preview)</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #simulation { border: 1px solid #ccc; padding: 10px; margin: 10px; }
+        button { padding: 10px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .emoji { font-size: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Gamified Migration & Harvest Simulation (Ethik & Biosphären)</h1>
+    <p>Integration loyaler Migranten 👥 in Umweltprojekte 🌍 (Rosary-Ridgebed, Mainau-Biosphären). Probabilität nach Gati-Ungenauigkeit (subjektiv: ±20% Varianz). Fetch Echtzeitdaten via API.</p>
+    <input type="range" id="migrant-slider" min="0" max="100" value="50" step="1" oninput="updateMigrant(this.value)">
+    <p id="migrant-value">Migrant-Integration: 50% (Loyale Arbeitskraft)</p>
+    <div id="simulation">
+        <p id="current-gen">Generation: 0 | Resources: 153 (Fischwunder-Basis)</p>
+        <button id="advance">Nächste Generation (7-Jahres-Zyklus)</button>
+        <button id="board-preview">Brettspiel-Vorschau</button>
+        <ul id="log"></ul>
+        <div id="imagines">
+            <p class="emoji">🏔️ Antarktis-Pyramide: Fraktal mit 153-Punkten (Pascals Dreieck-Summen).</p>
+            <p class="emoji">🌾 Max-Getreidespeicher: Kegelförmig, 1./2. Ableitung als Wachstumskurven.</p>
+        </div>
+    </div>
+    <script>
+        let gen = 0;
+        let resources = 153; // Fischwunder-Basis
+        const multipliers = [30, 60, 100];
+        const cycleLength = 7;
+        const phi = 1.618; // Goldener Schnitt
+        const gatiVariance = 0.2; // Gati-Ungenauigkeit (subjektiv)
+        const apiKey = 'YOUR_SECRET_KEY'; // Placeholder für deinen API-Schlüssel
+        const logList = document.getElementById('log');
+        
+        async function fetchRealData() {
+            try {
+                const response = await fetch(`https://api.usda.gov/api/v1/...?api_key=${apiKey}`); // USDA-API (passe Endpoint an)
+                const data = await response.json();
+                return data.priceFactor || 1.2; // Beispiel: Getreidepreis-Faktor
+            } catch (e) {
+                return 1.0; // Fallback
+            }
+        }
+        
+        function updateMigrant(value) {
+            document.getElementById('migrant-value').textContent = `Migrant-Integration: ${value}% (Ethik: Gastrecht 👥)`;
+            let boost = resources * (value / 100) * (1 + Math.random() * gatiVariance - gatiVariance / 2); // Gati-Unschärfe
+            addLog(`Migrant-Boost: +${boost.toFixed(2)} (Biosphären-Projekt 🌍)`);
+        }
+        
+        document.getElementById('advance').addEventListener('click', async () => {
+            if (gen >= 20) return;
+            gen++;
+            let priceFactor = await fetchRealData();
+            let isFat = Math.floor(gen / cycleLength) % 2 === 0;
+            let mult = multipliers[Math.floor(Math.random() * 3)] * priceFactor;
+            let variance = Math.random() * gatiVariance - gatiVariance / 2; // Subjektive Unsicherheit
+            let newRes = resources * (mult + variance) * phi; // Tausch-Wachstum
+            addLog(`Gen ${gen} (${isFat ? 'Fett' : 'Mager'}): Mult ${mult.toFixed(2)}, Gati-Varianz ${variance.toFixed(2)} -> ${newRes.toFixed(2)} | Bibel: Lev 19:34`);
+            resources = newRes;
+            document.getElementById('current-gen').textContent = `Generation: ${gen} | Resources: ${newRes.toFixed(2)}`;
+        });
+        
+        document.getElementById('board-preview').addEventListener('click', () => {
+            addLog('Brettspiel-Vorschau: Pyramiden-Brett mit Karten (Ereignisse 🌾), Tablet-App für Probabilitäten. Druckreif: 50 Karten, Fraktal-Design.');
+        });
+        
+        function addLog(message) {
+            let li = document.createElement('li');
+            li.textContent = message;
+            logList.appendChild(li);
+        }
+    </script>
+</body>
+</html>
