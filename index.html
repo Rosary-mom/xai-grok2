@@ -1446,3 +1446,142 @@ VII. Der Boss (Super-Trump-Analogie)	Der Boss ist nicht der Feind, sondern eine 
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive Rosary©®™, 2025ff-  Simulations für Golden Age Exodus</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; }
+        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; }
+        .tab button:hover { background-color: #ddd; }
+        .tab button.active { background-color: #ccc; }
+        .tabcontent { display: none; padding: 6px 12px; border: 1px solid #ccc; border-top: none; }
+        .plot { height: 500px; width: 100%; }
+        img { max-width: 100%; height: auto; }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+    <h1>Interaktive Gamified Simulations für Golden Age Exodus</h1>
+    <p>Integriert mit Weltraumcockpit von Degerfeld, Bitz/BW. Klicke auf die Tabs für verschiedene Views. Hover, Zoom und interagiere mit den Plots. Erweitert um GitHub Actions Status-Screenshot vom 15. Oktober 2025, der erfolgreiche Pages-Builds und Deployments zeigt.</p>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Spiral')" id="defaultOpen">Fraktal Spiral Migration</button>
+        <button class="tablinks" onclick="openTab(event, 'Roadmap')">Klimaneutrality Roadmap</button>
+        <button class="tablinks" onclick="openTab(event, 'Skagerrak')">Skagerrak Schifffahrtsrouten</button>
+        <button class="tablinks" onclick="openTab(event, 'Github')">GitHub Actions Status</button>
+    </div>
+
+    <div id="Spiral" class="tabcontent">
+        <h2>Fraktal Spiral Migration: Rosenkranz to Space (2025-2050)</h2>
+        <div id="spiral-plot" class="plot"></div>
+        <script>
+            // Dynamisch generierte Daten für die Spirale (kompakt, ohne lange Base64)
+            let theta = [];
+            for (let i = 0; i < 1000; i++) {
+                theta.push(i * 0.1);
+            }
+            let x = theta.map(t => t * Math.cos(t));
+            let y = theta.map(t => t * Math.sin(t));
+
+            let data = [{
+                x: x,
+                y: y,
+                mode: 'lines',
+                name: 'Migration Path'
+            }];
+
+            let layout = {
+                title: 'Fraktal Spiral Migration Path',
+                xaxis: { title: 'X-Koordinate' },
+                yaxis: { title: 'Y-Koordinate' },
+                hovermode: 'closest'
+            };
+
+            Plotly.newPlot('spiral-plot', data, layout);
+        </script>
+    </div>
+
+    <div id="Roadmap" class="tabcontent">
+        <h2>Klimaneutrality Roadmap</h2>
+        <div id="roadmap-plot" class="plot"></div>
+        <script>
+            // Beispiel-Daten für Roadmap (kann angepasst werden)
+            let years = [2025, 2030, 2035, 2040, 2045, 2050];
+            let emissions = [100, 80, 60, 40, 20, 0];
+
+            let data = [{
+                x: years,
+                y: emissions,
+                type: 'bar',
+                name: 'CO2 Emissions Reduction'
+            }];
+
+            let layout = {
+                title: 'Roadmap to Climate Neutrality',
+                xaxis: { title: 'Year' },
+                yaxis: { title: 'Emissions (%)' }
+            };
+
+            Plotly.newPlot('roadmap-plot', data, layout);
+        </script>
+    </div>
+
+    <div id="Skagerrak" class="tabcontent">
+        <h2>Skagerrak Schifffahrtsrouten</h2>
+        <div id="skagerrak-plot" class="plot"></div>
+        <script>
+            // Beispiel-Daten für eine Karte (verwende Scattergeo für eine Weltkarte)
+            let data = [{
+                type: 'scattergeo',
+                mode: 'lines',
+                lon: [10, 12, 15],  // Längengrade (Beispielroute)
+                lat: [57, 58, 59],   // Breitengrade
+                line: { color: 'blue', width: 2 },
+                name: 'Schifffahrtsroute'
+            }];
+
+            let layout = {
+                title: 'Skagerrak Shipping Routes',
+                geo: {
+                    scope: 'europe',
+                    projection: { type: 'mercator' },
+                    center: { lon: 10, lat: 58 },
+                    showland: true,
+                    landcolor: 'rgb(217,217,217)',
+                    countrycolor: 'rgb(255,255,255)'
+                }
+            };
+
+            Plotly.newPlot('skagerrak-plot', data, layout);
+        </script>
+    </div>
+
+    <div id="Github" class="tabcontent">
+        <h2>GitHub Actions Status</h2>
+        <p>Erfolgreiche Builds und Deployments vom 15. Oktober 2025.</p>
+        <!-- Füge hier das Bild ein; lade es in dein Repo hoch und verlinke es -->
+        <img src="github-actions-screenshot.png" alt="GitHub Actions Status Screenshot">
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementById("defaultOpen").click();
+    </script>
+</body>
+</html>
