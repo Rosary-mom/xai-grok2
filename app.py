@@ -11,7 +11,7 @@ CORS(app)  # Allow cross-origin for frontend
 
 # Initialize xAI client (OpenAI-compatible)
 client = OpenAI(
-    api_key=os.getenv("XAI_API_KEY"),  # Add your key to .env as XAI_API_KEY=your_key_here
+    api_key=os.getenv(xai-OJMhw0CTRAASkT6YemtAIo9QzNUYqmoDdlxq2aAF2D5761nG6jtrCij33Lkvk4g7dOPTlcq6ZHuYhFrw),  # Add your key to .env as XAI_API_KEY=your_key_here
     base_url="https://api.x.ai/v1"
 )
 
