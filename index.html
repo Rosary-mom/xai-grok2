@@ -1581,5 +1581,86 @@ VII. Der Boss (Super-Trump-Analogie)	Der Boss ist nicht der Feind, sondern eine 
     document.getElementById("defaultOpen").click();
 </script></body>
 </html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grok-Chatbot für COP30-Szenarien</title>
+    <style>
+        #chat-container {
+            width: 400px;
+            height: 500px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 20px auto;
+            background: white;
+            overflow-y: scroll;
+        }
+        #chat-messages {
+            height: 400px;
+            overflow-y: auto;
+        }
+        #user-input {
+            width: 80%;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <input type="text" id="user-input" placeholder="Ihre Nachricht...">
+        <button onclick="sendMessage()">Senden</button>
+        <select id="model-select">
+            <option value="grok-4">SUPERGROK4 Expert</option>
+            <option value="grok-4-beta">SUPERGROK4 Fast (Beta)</option>
+        </select>
+    </div>
 
+    <script>
+        function addMessage(role, content) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = `<strong>${role}:</strong> ${content}<br><br>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const model = document.getElementById('model-select').value;
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage('User', message);
+            input.value = '';
+
+            try {
+                const response = await fetch('http://localhost:5000/chat', {  // Change to your backend URL in production
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, model })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    addMessage('Error', data.error);
+                } else {
+                    addMessage('Grok', data.response);
+                }
+            } catch (error) {
+                addMessage('Error', 'Verbindungsfehler: ' + error.message);
+            }
+        }
+
+        // Optional: Press Enter to send
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
 
