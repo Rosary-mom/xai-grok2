@@ -1663,4 +1663,701 @@ VII. Der Boss (Super-Trump-Analogie)	Der Boss ist nicht der Feind, sondern eine 
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJEKT CHIMERA: Logbuch der Menschheiten - Das Goldene Zeitalter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Globale Stile und Kontrastverbesserung */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0e0e0e;
+            color: #00FFFF; /* Helles Cyan für besseren Kontrast und Cyber-Stil */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Concept_Mars_colony.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="none" stroke="%2300FFFF" stroke-width="2"/></svg>') 9 9, auto;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Modulare Kartenstile */
+        .resource-card, .project-card, .log-card, .matrix-card, .cockpit-card {
+            background-color: rgba(0, 10, 30, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        /* Button-Stile */
+        .action-button {
+            background-color: rgba(0, 100, 100, 0.6);
+            border: 1px solid #00FFFF;
+            color: #FFFFFF;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .action-button:hover {
+            background-color: rgba(0, 150, 150, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px #00FFFF;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            background-color: rgba(255, 255, 255, 0.2);
+            height: 0.75rem;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #00FFFF;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Gauge / Tacho */
+        .gauge {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid #00FFFF;
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(#00FFFF 0% var(--fill), rgba(0, 255, 255, 0.2) var(--fill) 100%);
+            border-radius: 50%;
+        }
+        
+        /* Chatbot Overlay */
+        #chatbot-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 30px;
+            z-index: 1000;
+            background-color: #FF00FF;
+            border: 3px solid #00FFFF;
+            box-shadow: 0 0 15px #FF00FF;
+        }
+        #chatbot-window {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            z-index: 999;
+            background: rgba(0, 10, 30, 0.95);
+            border: 3px solid #FF00FF;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #FF00FF;
+        }
+        
+        /* Ranking und Formulare */
+        th, td { padding: 8px; border: 1px solid rgba(0, 255, 255, 0.3); text-align: left; color: #00FFFF; }
+        input[type="text"], input[type="number"], select { 
+            padding: 8px; 
+            margin: 5px 0; 
+            width: 100%; 
+            background: rgba(0, 0, 0, 0.4); 
+            color: #00FFFF; 
+            border: 1px solid rgba(0, 255, 255, 0.5); 
+            border-radius: 4px;
+        }
+        
+        /* Log-Liste Stil */
+        #log-list {
+            list-style: none;
+            padding: 0;
+        }
+        #log-list li {
+            padding: 4px 0;
+            border-bottom: 1px dashed rgba(0, 255, 255, 0.1);
+        }
 
+        /* Responsivität */
+        @media (max-width: 768px) { 
+            .action-button { width: 100%; margin: 5px 0; }
+            .grid-cols-1, .grid-cols-3 { grid-template-columns: 1fr; }
+            #chatbot-window { width: 90%; height: 70%; bottom: 80px; right: 5%; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-8 p-4 bg-gray-900/70 rounded-lg border border-cyan-500/50">
+            <h1 class="text-4xl md:text-5xl font-orbitron text-white">PROJEKT CHIMERA: Logbuch der Menschheiten</h1>
+            <p class="text-xl mt-2 text-cyan-400">Operation: Das Goldene Zeitalter // RUNDE: <span id="round-counter">1</span></p>
+        </header>
+
+        <div class="mb-8">
+            <img src="https://media.giphy.com/media/kEESrxmc9pd9Jb064Q/giphy.gif" alt="Climate Crisis GIF" class="w-full rounded-lg shadow-lg mx-auto border border-red-500/50" style="max-width: 600px;">
+        </div>
+
+        <div class="flex justify-center mb-8 flex-wrap gap-4">
+            <button id="start-gambit" class="action-button bg-green-700/60">Start Gambit 🎲</button>
+            <button id="enter-cockpit" class="action-button">Enter Mars Mission Cockpit 🛰️</button>
+            <button id="open-manhunt" class="action-button bg-red-500/60">Start Manhunt 👑</button>
+            <button id="open-avatar-creator" class="action-button bg-yellow-600/60">3D Avatar erstellen 👤</button>
+            <button id="sos-button" class="action-button bg-red-700/60">Send SOS Signal 🆘</button>
+            <button id="reset-button" class="action-button bg-gray-500/60">Spiel zurücksetzen</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="resource-card">
+                <h2 class="text-2xl font-orbitron mb-4 text-cyan-400">Kommando-Ressourcen</h2>
+                <ul class="space-y-2">
+                    <li>Kapital (Mrd.): <span id="capital" class="font-bold text-green-400">18</span> 💰</li>
+                    <li>Datenspeicher (Ziop.): <span id="data" class="font-bold text-yellow-400">5</span> 💾</li>
+                    <li>Legitimität (%): <span id="legitimacy" class="font-bold text-blue-400">75</span> 📜</li>
+                    <li>Personal (Punkte): <span id="personnel" class="font-bold text-purple-400">100</span> 👥</li>
+                </ul>
+            </div>
+
+            <div class="matrix-card">
+                <h2 class="text-2xl font-orbitron mb-4 text-cyan-400">Globale Projekte (Gambit-Matrix)</h2>
+                <ul class="list-disc ml-4 space-y-1 text-sm">
+                    <li>Rosary Think Tank: Das Goldene Zeitalter 🧠</li>
+                    <li>Amazon Legacy Gambit 🌳</li>
+                    <li>Going Clay Gambit (Bodenfruchtbarkeit) 🏺</li>
+                    <li>Debt Crisis Gambit (Levy-Zyklus) 📉</li>
+                    <li>Evident Facts Gambit (Wissenschaft) 🔍</li>
+                </ul>
+            </div>
+
+            <div class="log-card">
+                <h2 class="text-2xl font-orbitron mb-4 text-cyan-400">Operations-Log & Archiv</h2>
+                <ul id="log-list" class="space-y-1 text-sm overflow-y-auto max-h-40">
+                    <li>Runde 1 initialisiert: Mars-Kolonie etabliert. 🚀</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="cockpit-section" class="cockpit-card mb-8 hidden">
+            <h2 class="text-3xl font-orbitron mb-6 text-center text-red-500">Mars Mission Cockpit: DWARF Engine Kontrollzentrum</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="h-96 w-full bg-black rounded-lg shadow-xl border border-cyan-500/50 p-2">
+                    <iframe src="https://www.canva.com/design/DAGqacd25Lg/qjKpPfdQ6PNoxrjbV0E7nw/view?embed" title="Solar System Explorer" class="w-full h-full rounded-lg" allowfullscreen></iframe>
+                </div>
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <h3 class="text-xl font-orbitron text-yellow-400">Legitimität/Energie ⚡</h3>
+                            <div class="gauge"><div class="gauge-fill" id="energy-gauge" style="--fill: 75%;"></div></div>
+                        </div>
+                        <div class="text-center p-4">
+                            <h3 class="text-xl font-orbitron text-green-400">Settlement Progress 🏗️</h3>
+                            <div class="progress-bar mt-2"><div class="progress-fill" id="settlement-progress" style="width: 20%;"></div></div>
+                            <p class="mt-2 text-sm text-gray-400">Fortschritt der Kolonisierung.</p>
+                            <button id="explore-button" class="action-button mt-4 w-full">Explore New Sector 🔭</button>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="text-xl font-orbitron text-center text-cyan-400">DWARF Engine: Mars Lander Simulation 🚀</h3>
+                        <canvas id="lander-canvas" width="400" height="200" class="mx-auto block mt-2 border-cyan-500"></canvas>
+                        <p class="text-center mt-2 text-sm text-gray-400">Use Arrow-Up (↑) to activate thrust and land safely!</p>
+                        <button id="dwarf-engine" class="action-button w-full mt-4 bg-purple-700/60">Activate DWARF Engine</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="avatar-creator-section" class="cockpit-card mb-8 hidden">
+            <h2 class="text-3xl font-orbitron mb-6 text-center text-yellow-400">Avatar-Konstruktor 👤 (Multiplayer Ready)</h2>
+            <p class="text-center mb-4 text-cyan-400">Erstelle deine personalisierte 3D-Spielfigur (Avatar) mit integriertem QR-Label-Slot (1-10).</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 border border-cyan-500/50 rounded-lg">
+                    <h3 class="text-xl font-orbitron mb-3">Persönliche Parameter</h3>
+                    <input type="text" id="avatar-name" placeholder="Name/Nickname">
+                    <input type="number" id="avatar-height" placeholder="Größe (cm)" min="100" max="250">
+                    <input type="number" id="avatar-weight" placeholder="Gewicht (kg)" min="30" max="200">
+                    <input type="number" id="avatar-age" placeholder="Alter" min="15" max="99">
+                    
+                    <label for="avatar-gender" class="block mt-3 mb-1">Geschlecht / Typus:</label>
+                    <select id="avatar-gender" class="w-full p-2 bg-gray-800 border border-cyan-500/50 rounded-md text-cyan-400">
+                        <option value="none">Wählen...</option>
+                        <option value="m">Männlich (Apostolischer Typus)</option>
+                        <option value="f">Weiblich (Marianischer Typus)</option>
+                        <option value="x">Nicht-Binär (Chimera Typus)</option>
+                    </select>
+                </div>
+
+                <div class="p-4 border border-cyan-500/50 rounded-lg">
+                    <h3 class="text-xl font-orbitron mb-3">Foto & QR-Label</h3>
+                    <p class="mb-2 text-sm text-red-400">Kamera-Foto-Upload (Simuliert):</p>
+                    <input type="file" id="avatar-photo" accept="image/*" class="w-full text-sm text-cyan-400/80 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/40">
+                    <label for="qr-code-id" class="block mt-4 mb-1">Zugewiesene QR-Reg.com ID (1-10):</label>
+                    <input type="number" id="qr-code-id" placeholder="QR-Label ID" min="1" max="10">
+                    <div id="avatar-preview" class="mt-4 h-24 bg-gray-700/50 flex items-center justify-center rounded-md text-sm text-gray-400">
+                        Avatar-Preview (Foto-Upload simuliert)
+                    </div>
+                </div>
+            </div>
+            
+            <button id="generate-3d-file" class="action-button w-full mt-6 bg-purple-600/70">3D-Druckdatei generieren & QR-Label verknüpfen</button>
+            
+            <div id="download-link-container" class="mt-4 text-center hidden">
+                <p class="text-green-400 text-lg">Generierung erfolgreich! Lade deine Datei herunter:</p>
+                <a id="download-link" href="#" download="chimera_avatar.stl" class="action-button bg-green-700/60 mt-2 inline-block">Download 3D-Druckdatei (STL)</a>
+            </div>
+        </div>
+
+        <div id="manhunt-section" class="cockpit-card mb-8 hidden">
+            <h2 class="text-3xl font-orbitron mb-6 text-center text-red-500">Operation: KRONJUWELEN-MANHUNT 👑</h2>
+            <p class="text-center mb-4 text-cyan-400">Verwende HUMINT und Geo-Daten, um die Räuber des Louvre zu stellen. Fortschritt: <span id="manhunt-percent">0</span>%</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 border border-red-500/50 rounded-lg">
+                    <h3 class="text-xl font-orbitron mb-3 text-red-400">FAHNDUNGS-MATRIX (Logik-Prüfung)</h3>
+                    <p class="text-sm text-gray-400 mb-4">Beantworte W-Fragen. Kosten: Daten -5.</p>
+                    
+                    <label for="w-question" class="block mt-3 mb-1">Welches ist das wahrscheinlichste Motiv (Wieso)?</label>
+                    <select id="w-question" class="w-full p-2 bg-gray-800 border-red-500/50 text-cyan-400">
+                        <option value="none">Wählen...</option>
+                        <option value="politic">Politische Korrektur / Monarchistische Restauration</option>
+                        <option value="finance">Finanzielle Bereicherung / Schwarzmarkt</option>
+                        <option value="dynasty">Dynastische Allianz / Erbansprüche (Mecklenburg-Orléans)</option>
+                    </select>
+                    
+                    <label for="w-wer" class="block mt-3 mb-1">Wer hat den Raub initiiert (Wer)?</label>
+                    <input type="text" id="w-wer" placeholder="Organisation/Person (z.B. RN/Le Pen, UN-Agenten)">
+                    
+                    <button id="submit-w-questions" class="action-button bg-red-700/60 mt-4 w-full">Analyse starten</button>
+                </div>
+
+                <div class="p-4 border border-red-500/50 rounded-lg">
+                    <h3 class="text-xl font-orbitron mb-3 text-red-400">HUMINT & GEOTAGGING (Live-Daten)</h3>
+                    
+                    <p class="text-sm text-gray-400">Scanne einen der 10 QR-Labels für eine Geo-Spur. Kosten: Kapital -3.</p>
+                    <button id="scan-qr-tag" class="action-button bg-cyan-700/60 w-full mt-2">QR-Tag scannen / Position abrufen 📱</button>
+                    
+                    <label for="social-media-input" class="block mt-4 mb-1">Real Crime Blog Eintrag finden (Wann/Wo):</label>
+                    <input type="text" id="social-media-input" placeholder="Ort/Datum eingeben (z.B. Fontainebleau, Antwerpen)">
+                    
+                    <button id="submit-humint" class="action-button bg-cyan-700/60 mt-4 w-full">HUMINT abfragen</button>
+                </div>
+            </div>
+            
+            <div class="progress-bar mt-6"><div class="progress-fill" id="manhunt-progress" style="width: 0%;"></div></div>
+        </div>
+
+        <div id="ranking" class="cockpit-card mb-8">
+            <h2 class="text-3xl font-orbitron mb-4 text-center text-yellow-400">Spieler-Ranking 🏆 (Effizienz-Score)</h2>
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <input type="text" id="player-name" placeholder="Dein Name für Ranking" class="flex-grow">
+                <button id="save-score" class="action-button flex-shrink-0 bg-yellow-700/60">Score speichern</button>
+            </div>
+            <table id="ranking-table">
+                <thead><tr><th>Name</th><th>Score (Effizienz)</th><th>Datum</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <p class="mt-8 text-sm text-center text-gray-500">©®™ ROSARY 2025 ff | Be a SuperHero! -"CHIMMY" 🦸‍♂️</p>
+    </div>
+    
+    <button id="chatbot-button" class="flex items-center justify-center text-white font-bold">🧠</button>
+    
+    <div id="chatbot-window" class="hidden p-3">
+        <h3 class="text-lg font-orbitron text-center mb-2 text-pink-400">XAI Chatbot Log</h3>
+        <iframe src="https://rosary-mom.github.io/SpaceX/backend-chatbot.jsw" class="w-full h-4/5 bg-gray-900 border border-pink-400 rounded-md"></iframe>
+        <button id="close-chatbot" class="action-button w-full mt-2 bg-pink-700/60">Schließen</button>
+    </div>
+
+    <script>
+        // --- SICHERHEITSHINWEIS: API KEY MUSS EINGEFÜGT WERDEN ---
+        const NASA_API_KEY = 'IHR_SICHERER_NASA_API_SCHLÜSSEL'; // BITTE ERSETZEN!
+
+        // Zentrales Spielzustands-Objekt
+        const initialState = {
+            round: 1,
+            capital: 18,
+            data: 5,
+            legitimacy: 75,
+            personnel: 100,
+            settlementProgress: 20,
+            manhuntProgress: 0 // NEU: Fahndungsfortschritt
+        };
+        let gameState = {...initialState}; 
+
+        const rankingBody = document.getElementById('ranking-table').querySelector('tbody');
+
+        function loadRanking() {
+            const rankings = JSON.parse(localStorage.getItem('chimeraRankings')) || [];
+            rankings.sort((a, b) => b.score - a.score); 
+            rankingBody.innerHTML = '';
+            rankings.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td>`;
+                rankingBody.appendChild(row);
+            });
+        }
+        
+        loadRanking(); 
+
+        const updateResources = () => {
+            document.getElementById('round-counter').textContent = gameState.round;
+            document.getElementById('capital').textContent = gameState.capital;
+            document.getElementById('data').textContent = gameState.data;
+            document.getElementById('legitimacy').textContent = gameState.legitimacy;
+            document.getElementById('personnel').textContent = gameState.personnel;
+            
+            const legFill = gameState.legitimacy > 100 ? 100 : gameState.legitimacy;
+            const settlementFill = gameState.settlementProgress > 100 ? 100 : gameState.settlementProgress;
+            const manhuntFill = gameState.manhuntProgress > 100 ? 100 : gameState.manhuntProgress;
+
+            document.getElementById('energy-gauge').style.setProperty('--fill', `${legFill}%`);
+            document.querySelector('#settlement-progress').style.width = `${settlementFill}%`;
+            document.querySelector('#manhunt-progress').style.width = `${manhuntFill}%`; // Manhunt Progressbar
+            document.getElementById('manhunt-percent').textContent = `${manhuntFill}`; // Manhunt Prozentanzeige
+        };
+
+        const addLog = (message) => {
+            const li = document.createElement('li');
+            li.textContent = message;
+            const logList = document.getElementById('log-list');
+            logList.prepend(li);
+            
+            if (logList.children.length > 10) {
+                logList.removeChild(logList.lastChild);
+            }
+        };
+
+        async function fetchRealData() {
+            // HIER MÜSSEN SIE DIE LOGIK FÜR IHRE QR-Reg.com API UND DEN KEY EINFÜGEN
+            const factor = 1.0 + (Math.random() * 0.5 - 0.25); 
+            addLog(`Real-Data-Fetch Simuliert: Volatilitäts-Faktor ${factor.toFixed(2)} angewandt 🔄`);
+            return factor;
+        }
+
+        // --- Event Listener ---
+
+        document.getElementById('start-gambit').addEventListener('click', async () => {
+            if (gameState.capital < 5) {
+                alert('Kapital zu niedrig für Gambit. Benötigt: 5 Mrd.');
+                return;
+            }
+            
+            let factor = await fetchRealData();
+            gameState.round++;
+            
+            gameState.capital -= 5;
+            const successRate = 0.75 * factor;
+            const isSuccess = Math.random() < successRate;
+
+            if (isSuccess) {
+                const reward = Math.round(15 * factor);
+                gameState.legitimacy += reward;
+                gameState.data += 1;
+                addLog(`Runde ${gameState.round}: Gambit erfolgreich! +${reward} Legitimität. Faktor: ${factor.toFixed(2)} 🌟`);
+            } else {
+                gameState.legitimacy -= 5;
+                gameState.personnel -= 5;
+                addLog(`Runde ${gameState.round}: Gambit fehlgeschlagen. -5 Legitimität & Personal. 💀`);
+            }
+            
+            updateResources();
+        });
+
+        document.getElementById('sos-button').addEventListener('click', () => {
+            addLog('SOS-Signal gesendet: Hilfsressourcen incoming (Kapital +2, Legitimität -5). 🆘');
+            gameState.capital += 2;
+            gameState.legitimacy -= 5;
+            updateResources();
+        });
+        
+        document.getElementById('explore-button').addEventListener('click', async () => {
+            if (gameState.data < 2) {
+                alert('Daten zu niedrig für Exploration. Benötigt: 2 Ziop.');
+                return;
+            }
+            gameState.data -= 2;
+            let factor = await fetchRealData();
+            
+            const progressIncrease = Math.round(10 * factor);
+            gameState.settlementProgress += progressIncrease;
+            
+            if (gameState.settlementProgress > 100) gameState.settlementProgress = 100;
+            updateResources();
+            addLog(`Neuer Sektor erkundet: Settlement +${progressIncrease}% (Faktor: ${factor.toFixed(2)}). 🌌`);
+        });
+
+        document.getElementById('reset-button').addEventListener('click', () => {
+            gameState = {...initialState};
+            document.getElementById('log-list').innerHTML = '<li>Runde 1 initialisiert: Mars-Kolonie etabliert. 🚀</li>';
+            updateResources();
+            alert('Spiel zurückgesetzt. Neuer Anfang für die Menschheiten.');
+        });
+
+        document.getElementById('enter-cockpit').addEventListener('click', () => {
+            document.getElementById('cockpit-section').classList.toggle('hidden');
+            if (!document.getElementById('cockpit-section').classList.contains('hidden')) {
+                addLog('Mars Mission Cockpit aktiviert: Solar System Explorer online. 🛰️');
+            }
+        });
+        
+        document.getElementById('open-avatar-creator').addEventListener('click', () => {
+            document.getElementById('avatar-creator-section').classList.toggle('hidden');
+            addLog('Avatar-Konstruktor geöffnet. Bereite dich auf die 3D-Druck-Mission vor.');
+        });
+        
+        document.getElementById('open-manhunt').addEventListener('click', () => {
+            document.getElementById('manhunt-section').classList.toggle('hidden');
+            addLog('KRONJUWELEN-MANHUNT gestartet. Die Jagd auf die Raubgüter ist eröffnet.');
+        });
+
+
+        // --- MANHUNT LOGIC ---
+
+        document.getElementById('submit-w-questions').addEventListener('click', () => {
+            if (gameState.data < 5) {
+                alert('Daten-Ressourcen zu niedrig. Benötigt: 5 Ziop.');
+                return;
+            }
+            
+            const motiv = document.getElementById('w-question').value;
+            const wer = document.getElementById('w-wer').value.toLowerCase();
+            
+            gameState.data -= 5;
+            let progress = 0;
+            let logMessage = 'W-Fragen-Analyse: ';
+
+            if (motiv === 'dynasty') {
+                progress += 20;
+                logMessage += 'Motiv (Dynastische Allianz) bestätigt. +20% Fortschritt. 🏰';
+            } else if (motiv === 'politic') {
+                progress += 10;
+                logMessage += 'Motiv (Politische Korrektur) plausibel. +10% Fortschritt. 🗳️';
+            } else {
+                progress -= 5;
+                logMessage += 'Motiv-Annahme unschlüssig. -5% Fortschritt. ❓';
+            }
+            
+            if (wer.includes('uno') || wer.includes('unesco') || wer.includes('berry')) {
+                progress += 25; 
+                logMessage += ' Akteur (Globale Player / UN-Agenten) als Primärziel identifiziert! +25%.';
+            } else if (wer.includes('le pen') || wer.includes('rn') || wer.includes('royal')) {
+                progress += 15;
+                logMessage += ' Akteur (Nationalistische/Royale Kräfte) als Verdacht aufgenommen. +15%.';
+            }
+
+            gameState.manhuntProgress += progress;
+            if (gameState.manhuntProgress > 100) gameState.manhuntProgress = 100;
+
+            addLog(logMessage);
+            updateResources();
+        });
+
+
+        document.getElementById('submit-humint').addEventListener('click', () => {
+            if (gameState.capital < 3) {
+                alert('Kapital zu niedrig für HUMINT-Operationen. Benötigt: 3 Mrd.');
+                return;
+            }
+            
+            const humintInput = document.getElementById('social-media-input').value.toLowerCase();
+            gameState.capital -= 3;
+            let progress = 0;
+
+            if (humintInput.includes('antwerpen') || humintInput.includes('israel') || humintInput.includes('schwarzmarkt')) {
+                progress += 20;
+                addLog(`HUMINT-Treffer: Globaler Schwarzmarkt (${humintInput}) als Verbleibsort. +20% Fortschritt. 🗺️`);
+            } else if (humintInput.includes('fontainebleau') || humintInput.includes('mecklenburg')) {
+                progress += 15;
+                addLog(`HUMINT-Treffer: Historische Spur (Hochzeitsallianzen) in ${humintInput} verfolgt. +15% Fortschritt. 💍`);
+            } else {
+                progress -= 5;
+                addLog('HUMINT-Abfrage ohne Erfolg. -5% Fortschritt. 🗑️');
+            }
+            
+            gameState.manhuntProgress += progress;
+            if (gameState.manhuntProgress > 100) gameState.manhuntProgress = 100;
+            updateResources();
+        });
+
+
+        document.getElementById('scan-qr-tag').addEventListener('click', () => {
+            const possibleLocations = [
+                'Geotag: Antwerpen, Diamantenviertel (Schwarzmarktspur) 💎',
+                'Geotag: Normandie, Hermelin-Küste (Royale Spur) 🇫🇷',
+                'Geotag: Genf, UNO-Büro (UNESCO/UN-Charta Spur) 🇨🇭',
+                'Geotag: Mecklenburg-Schwerin, Archiv (Dynastische Spur) 🇩🇪'
+            ];
+            
+            const randomLocation = possibleLocations[Math.floor(Math.random() * possibleLocations.length)];
+            gameState.manhuntProgress += 10;
+            
+            addLog(`QR-Scan erfolgreich: ${randomLocation} +10% Fortschritt. 📍`);
+            updateResources();
+        });
+
+
+        // --- AVATAR LOGIC ---
+        document.getElementById('generate-3d-file').addEventListener('click', () => {
+            const name = document.getElementById('avatar-name').value;
+            const qrId = parseInt(document.getElementById('qr-code-id').value);
+            
+            if (!name || qrId < 1 || qrId > 10) {
+                alert('Bitte Namen eingeben und eine gültige QR-ID (1-10) wählen.');
+                return;
+            }
+
+            addLog(`Avatar-Daten für Spieler ${name} (QR-ID: ${qrId}) an das Backend gesendet. 3D-Datei generiert. 💾`);
+
+            const baseDownloadURL = 'https://rosary-mom.github.io/SpaceX/assets/';
+            const gender = document.getElementById('avatar-gender').value;
+            
+            let stlFile = 'chimera_base_avatar.stl'; 
+            if (gender === 'm') stlFile = 'apostolic_avatar.stl';
+            else if (gender === 'f') stlFile = 'marian_avatar.stl';
+            else if (gender === 'x') stlFile = 'chimera_avatar.stl';
+
+            const downloadLinkElement = document.getElementById('download-link');
+            downloadLinkElement.href = baseDownloadURL + stlFile;
+            downloadLinkElement.textContent = `Download: ${stlFile}`;
+            
+            document.getElementById('download-link-container').classList.remove('hidden');
+        });
+
+        // --- LANDER SIMULATION LOGIK (unverändert) ---
+        function startLanderSimulation() {
+            const canvas = document.getElementById('lander-canvas');
+            const ctx = canvas.getContext('2d');
+            let y = 10;
+            let vy = 0;
+            let thrustActive = false;
+            const gravity = 0.05;
+            const thrust = 0.15;
+            const landerWidth = 30;
+            const landerHeight = 15;
+
+            const keyHandler = (e) => {
+                if (e.key === 'ArrowUp') thrustActive = true;
+            };
+            const keyUpHandler = (e) => {
+                if (e.key === 'ArrowUp') thrustActive = false;
+            };
+            document.removeEventListener('keydown', keyHandler);
+            document.removeEventListener('keyup', keyUpHandler);
+            document.addEventListener('keydown', keyHandler);
+            document.addEventListener('keyup', keyUpHandler);
+
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (thrustActive) {
+                    vy -= thrust;
+                    ctx.fillStyle = 'orange';
+                    ctx.beginPath();
+                    ctx.moveTo(190, y + landerHeight);
+                    ctx.lineTo(190 + landerWidth, y + landerHeight);
+                    ctx.lineTo(205, y + landerHeight + 10);
+                    ctx.fill();
+                }
+                
+                vy += gravity;
+                y += vy;
+
+                if (y >= canvas.height - 10 - landerHeight) {
+                    y = canvas.height - 10 - landerHeight;
+                    document.removeEventListener('keydown', keyHandler);
+                    document.removeEventListener('keyup', keyUpHandler);
+
+                    if (Math.abs(vy) > 0.5) {
+                        addLog('Mars-Landung fehlgeschlagen! -10 Kapital & Personal. 💥');
+                        gameState.capital -= 10;
+                        gameState.personnel -= 10;
+                    } 
+                    else {
+                        addLog('Mars-Landung erfolgreich! +5 Kapital. 🎉');
+                        gameState.capital += 5;
+                        gameState.settlementProgress += 5;
+                    }
+                    updateResources();
+                    return;
+                }
+
+                ctx.fillStyle = '#FF00FF';
+                ctx.fillRect(190, y, landerWidth, landerHeight);
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(0, canvas.height - 10, canvas.width, 10);
+                
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        document.getElementById('dwarf-engine').addEventListener('click', () => {
+            if (gameState.personnel < 10) {
+                 alert('Personal zu niedrig für DWARF Engine Start. Benötigt: 10 Punkte.');
+                 return;
+            }
+            gameState.personnel -= 10;
+            addLog('DWARF-Engine aktiviert: Mars-Landungssimulation gestartet. 🚀');
+            startLanderSimulation();
+            updateResources();
+        });
+
+
+        document.getElementById('save-score').addEventListener('click', () => {
+            const name = document.getElementById('player-name').value.trim();
+            if (!name) return alert('Bitte Namen eingeben!');
+            
+            // Score-Berechnung
+            const finalScore = Math.round((
+                gameState.capital * 10 + 
+                gameState.data * 50 + 
+                gameState.legitimacy * 2 + 
+                gameState.settlementProgress * 5 +
+                gameState.manhuntProgress * 10 // Manhunt-Fortschritt wird stark belohnt
+            ) / gameState.round);
+
+            const rankings = JSON.parse(localStorage.getItem('chimeraRankings')) || [];
+            rankings.push({ 
+                name, 
+                score: finalScore, 
+                date: new Date().toLocaleDateString() 
+            });
+            localStorage.setItem('chimeraRankings', JSON.stringify(rankings));
+            loadRanking();
+            addLog(`Score gespeichert für ${name}: ${finalScore} 🏆`);
+        });
+        
+        // --- Chatbot Logic ---
+        document.getElementById('chatbot-button').addEventListener('click', () => {
+            document.getElementById('chatbot-window').classList.toggle('hidden');
+        });
+        document.getElementById('close-chatbot').addEventListener('click', () => {
+            document.getElementById('chatbot-window').classList.add('hidden');
+        });
+
+
+        // Initialisierung
+        updateResources();
+    </script>
+</body>
+</html>
