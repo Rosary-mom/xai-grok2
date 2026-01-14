@@ -86,6 +86,11 @@
         #chat-messages { height: 300px; overflow-y: auto; padding: 5px; border-bottom: 1px solid #FF00FF; }
         .user-msg { text-align: right; color: #00FFFF; }
         .bot-msg { text-align: left; color: #FF00FF; }
+
+        /* New Quiz Styles */
+        .quiz-card { background-color: rgba(0, 0, 0, 0.7); border: 1px solid cyan; padding: 1rem; border-radius: 0.5rem; }
+        .option-label { display: flex; align-items: center; gap: 0.5rem; }
+        .option-img { width: 50px; height: 50px; object-fit: cover; border-radius: 0.25rem; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -106,6 +111,7 @@
             <button id="open-avatar-creator" class="action-button bg-yellow-600/60">3D Avatar erstellen 👤</button>
             <button id="sos-button" class="action-button bg-red-700/60">Send SOS Signal 🆘</button>
             <button id="reset-button" class="action-button bg-gray-500/60">Spiel zurücksetzen</button>
+            <button id="open-quiz" class="action-button bg-blue-600/60">Quiz starten ❓</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -259,6 +265,15 @@
             </table>
         </div>
 
+        <!-- New Quiz Section -->
+        <div id="quiz-section" class="quiz-card mb-8 hidden">
+            <h2 class="text-3xl font-orbitron mb-6 text-center text-yellow-400">Mars-Kolonie Quiz (mit Bildern)</h2>
+            <p class="text-center mb-4 text-cyan-400">Beantworte Fragen zur Migration und Demografie. Bilder inspirieren die Optionen wie in X-Umfragen.</p>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz" class="action-button mt-4">Antwort überprüfen</button>
+            <div id="quiz-feedback" class="mt-4 text-cyan-400"></div>
+        </div>
+
         <p class="mt-8 text-sm text-center text-gray-500">©®™ ROSARY 2025 ff | Be a SuperHero! -"CHIMMY" 🦸‍♂️</p>
     </div>
     
@@ -275,8 +290,7 @@
 
     <script>
         // --- SICHERHEITSHINWEIS: API KEY MUSS EINGEFÜGT WERDEN ---
-        const CHATBOT_API_URL = 'IHR_BACKEND_CHATBOT_URL_HIER'; // BITTE ERSETZEN (z.B. Wix-Endpoint, Node.js-Server)
-        const NASA_API_KEY = 'IHR_SICHERER_NASA_API_SCHLÜSSEL'; // BITTE ERSETZEN!
+        const NASA_API_KEY = 'KCD8VILzUZP6KJEyKcK1noU2OYX9WtaqJGhHHxTa';
 
         // Zentrales Spielzustands-Objekt
         const initialState = {
@@ -346,7 +360,35 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        // Hauptfunktion zum Senden der Nachricht an das Backend
+        // xAI API Integration
+        const XAI_API_KEY = '*5Holy7Rosary8Church6!';
+        async function callXaiApi(prompt) {
+            if (!XAI_API_KEY) {
+                return 'API-Schlüssel fehlt. Konfiguriere XAI_API_KEY.';
+            }
+            try {
+                const response = await fetch('https://api.x.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${XAI_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'grok-beta',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 300,
+                        temperature: 0.7
+                    })
+                });
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error('xAI API Fehler:', error);
+                return 'Fehler beim Aufruf der xAI API.';
+            }
+        }
+
+        // Updated Chatbot with xAI API
         async function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
@@ -358,23 +400,11 @@
             document.getElementById('send-chat').disabled = true;
 
             try {
-                // ANPASSUNG NÖTIG: Dies ist der kritische Punkt. Ersetzen Sie CHATBOT_API_URL durch die URL Ihres gehosteten Backends.
-                const response = await fetch(CHATBOT_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userMessage: message, model: 'grok-4' })
-                });
-
-                const data = await response.json();
-                
-                // Da die .jsw Logik in Ihrem Backend liegt, simulieren wir die Antwortstruktur
-                const botResponse = data.response || data.error || "Fehler: Verbindung erfolgreich, aber keine gültige Antwort vom XAI-Backend erhalten (CORS/URL prüfen).";
-
-                displayChatMessage('bot', botResponse);
+                const response = await callXaiApi(`Als Grok, antworte witzig und hilfreich auf: ${message}. Beziehe dich auf Projekt Chimera Ressourcen: ${JSON.stringify(gameState)}.`);
+                displayChatMessage('bot', response);
                 addLog(`XAI-Chatbot befragt: Antwort erhalten.`, 'info');
-
             } catch (error) {
-                displayChatMessage('bot', `Verbindungsfehler (CORS/Server): Die Anfrage konnte das Backend nicht erreichen. (${error.message})`);
+                displayChatMessage('bot', `Verbindungsfehler: ${error.message}`);
                 addLog(`Verbindungsfehler zum Chatbot: ${error.message}`, 'warning');
             } finally {
                 input.value = '';
@@ -386,9 +416,6 @@
         // Event Listener für Chatbot-Button
         document.getElementById('chatbot-button').addEventListener('click', () => {
             document.getElementById('chatbot-window').classList.toggle('hidden');
-        });
-        document.getElementById('close-chatbot').addEventListener('click', () => {
-            document.getElementById('chatbot-window').classList.add('hidden');
         });
         document.getElementById('send-chat').addEventListener('click', sendChatMessage);
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
@@ -537,6 +564,94 @@
             localStorage.setItem('chimeraRankings', JSON.stringify(rankings));
             loadRanking();
             addLog(`Score gespeichert für ${name}: ${finalScore} 🏆`);
+        });
+
+        // --- New Quiz Logic ---
+        let quizzes = [];
+        let currentQuizIndex = 0;
+
+        async function loadQuizzes() {
+            try {
+                // For GitHub repo: fetch('https://raw.githubusercontent.com/Rosary-mom/xai-grok2/main/quizzes.txt')
+                // For local: fetch('quizzes.txt')
+                const response = await fetch('quizzes.txt'); // Adjust based on deployment
+                const text = await response.text();
+                const lines = text.split('\n');
+                quizzes = [];
+                let i = 0;
+                while (i < lines.length) {
+                    let line = lines[i].trim();
+                    if (!line) { i++; continue; }
+                    let question = line;
+                    let options = [];
+                    let answer = null;
+                    i++;
+                    while (i < lines.length && !lines[i].trim().startsWith('ANSWER:')) {
+                        let optionLine = lines[i].trim();
+                        if (optionLine.startsWith('A.') || optionLine.startsWith('B.') || optionLine.startsWith('C.') || optionLine.startsWith('D.')) {
+                            let parts = optionLine.split(' ', 1);
+                            let label = parts[0][0];
+                            let rest = optionLine.slice(parts[0].length + 1);
+                            let img = null;
+                            if (rest.includes('[image:')) {
+                                let textParts = rest.split('[image:');
+                                rest = textParts[0].trim();
+                                img = textParts[1].replace(']', '').trim();
+                            }
+                            options.push({ label, text: rest, img });
+                        }
+                        i++;
+                    }
+                    if (i < lines.length && lines[i].trim().startsWith('ANSWER:')) {
+                        answer = lines[i].trim().split(':')[1].trim();
+                        i++;
+                    }
+                    if (question && options.length && answer) {
+                        quizzes.push({ question, options, answer });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading quizzes:', error);
+                addLog('Fehler beim Laden von quizzes.txt.');
+            }
+        }
+
+        function loadQuiz() {
+            if (quizzes.length === 0) return;
+            const quiz = quizzes[currentQuizIndex];
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = `
+                <p class="text-lg mb-4">${quiz.question}</p>
+                <form id="quiz-form">
+                    ${quiz.options.map(opt => `
+                        <label class="option-label block mb-2">
+                            <input type="radio" name="answer" value="${opt.label}">
+                            ${opt.img ? `<img src="${opt.img}" alt="${opt.text}" class="option-img">` : ''}
+                            ${opt.label}. ${opt.text}
+                        </label>
+                    `).join('')}
+                </form>
+            `;
+        }
+
+        // Load quizzes on init
+        loadQuizzes();
+
+        document.getElementById('open-quiz').addEventListener('click', () => {
+            document.getElementById('quiz-section').classList.toggle('hidden');
+            loadQuiz();
+        });
+
+        document.getElementById('submit-quiz').addEventListener('click', async () => {
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (!selected) return;
+            const quiz = quizzes[currentQuizIndex];
+            const isCorrect = selected.value === quiz.answer;
+            let feedback = isCorrect ? 'Richtig! 🎉' : 'Falsch. Richtig ist ' + quiz.answer + '.';
+            const apiFeedback = await callXaiApi(`Erkläre, warum ${quiz.answer} die richtige Antwort auf diese Frage ist: ${quiz.question}`);
+            document.getElementById('quiz-feedback').textContent = feedback + ' ' + apiFeedback;
+            currentQuizIndex = (currentQuizIndex + 1) % quizzes.length;
+            loadQuiz();
         });
 
         // Initialisierung
