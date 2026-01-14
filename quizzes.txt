@@ -1,0 +1,34 @@
+Welches demografische Risiko besteht laut der Migrant-Chart Simulation für eine Mars-Kolonie bei einer ungesteuerten Migration männlicher Kohorten?
+A. Eine erhöhte landwirtschaftliche Produktivität durch mehr Arbeitskräfte. [image: https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fs41526-024-00428-x/MediaObjects/41526_2024_428_Fig1_HTML.png]
+B. Ein hohes Risiko für soziale Instabilität und ein Scheitern der kooperativen Allianz durch ein massives Geschlechterungleichgewicht. [image: http://h7.prb.org/wp-content/uploads/2021/05/ped-article-infographic.jpg]
+C. Eine automatische Stabilisierung des Q-Hebels durch physische Überpräsenz. [image: https://static.righto.com/images/minuteman-mmiii/guidance-labeled.jpg]
+D. Dass der Sauerstoffverbrauch pro Kopf sinkt. [image: https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-024-54012-0/MediaObjects/41598_2024_54012_Fig1_HTML.png]
+ANSWER: B
+
+Wie wird das Konzept der 'Remigration' in der SpaceX-Mars-Simulation spieltheoretisch sinnvoll eingesetzt?
+A. Als Abschiebung von unproduktiven Individuen zur Ressourcenersparnis. [image: https://cdn.mos.cms.futurecdn.net/GVinUUQ7yRpaAbfF8YSYqX.jpg]
+B. Als dynamischer Rückkopplungsprozess, um die Symmetrie und das Gleichgewicht der Population im EDEN-Habitat zu erhalten. [image: https://ars.els-cdn.com/content/image/1-s2.0-S2950160124000287-gr1.jpg]
+C. Um die Anzahl der benötigten Starships künstlich zu erhöhen. [image: https://media.springernature.com/lw1200/springer-static/image/art%3A10.1038%2Fs41598-024-54012-0/MediaObjects/41598_2024_54012_Fig1_HTML.png]
+D. Um den Kontakt zur Erde vollständig abzubrechen. [image: https://www.science.org/do/10.1126/science.aav1988/full/ca_0824NID_MarCO_online.jpg]
+ANSWER: B
+
+Inwiefern adressiert das Modell 'Jesaja 4,1' die Problematik eines extremen Männerüberschusses in einer Krisensituation oder Kolonisation?
+A. Es schlägt vor, die Männeranzahl durch Losverfahren zu reduzieren. [image: https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=10227648633546997]
+B. Es skizziert eine soziale Schutzstruktur (7:1), die selbst bei extremen demografischen Schieflagen Identität und Ordnung (den Namen) sichert. [image: https://ctb.ku.edu/sites/default/files/chapter_files/cdc-phases-of-social-determinants-of-health-initiative_chart.png]
+C. Es fordert die Rückkehr aller Migranten in ihre Herkunftsländer. [image: https://wol.iza.org/uploads/articles/589/images/IZAWOL.123.ga.png]
+D. Es ignoriert die demografische Zusammensetzung zugunsten rein materieller Fragen. [image: https://substackcdn.com/image/fetch/$s_!J95K!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8865f442-8de4-4592-aba6-3bac4e7ae205_1020x724.png]
+ANSWER: B
+
+Warum ist die Rosenkranz-Approximation bei der Steuerung von Migrationsströmen im Weltraum wichtig?
+A. Zur Berechnung der Ticketpreise für Mars-Flüge. [image: https://pubs.acs.org/cms/10.1021/acs.chemmater.4c01468/asset/images/large/cm4c01468_0007.jpeg]
+B. Um sicherzustellen, dass die Zuwanderung in harmonischen Frequenzen erfolgt, die die Skaleninvarianz des Habitats nicht sprengen. [image: https://img.freepik.com/premium-photo/illustration-balanced-scale-symbolizing-justice-surrounded-by-diverse-figures-representing-equality-fairness_15083-18685.jpg?w=360]
+C. Damit die Raumschiffe im Weltraum nicht kollidieren. [image: https://cosmofluencer.space/wp-content/uploads/2024/11/debris.jpg]
+D. Um die religiöse Zugehörigkeit der Migranten statistisch zu erfassen. [image: https://www.pewresearch.org/wp-content/uploads/sites/7/2012/07/Faithonthemove-chart-09.png]
+ANSWER: B
+
+Welchen Einfluss hat ein unausgewogenes Geschlechterverhältnis auf den VELOLoop-Freiheits-Score einer neuen Zivilisation?
+A. Der Score steigt, da Wettbewerb die Freiheit fördert. [image: https://journals.sagepub.com/cms/10.1177/00113921231217499/asset/34db2829-91a0-406b-a917-54fe65764084/assets/images/large/10.1177_00113921231217499-fig2.jpg]
+B. Der Score sinkt, da echte ethische Freiheit eine balancierte, symmetrische Gemeinschaft als Basis benötigt. [image: https://helpfulprofessor.com/wp-content/uploads/2023/06/freedom-examples-and-definition.jpg]
+C. Das Geschlechterverhältnis hat keinen Einfluss auf mathematische Scores. [image: https://img.freepik.com/premium-photo/illustration-balanced-scale-symbolizing-justice-surrounded-by-diverse-figures-representing-equality-fairness_15083-18685.jpg?w=360]
+D. Der Score wird nur durch die Menge des verfügbaren Wassers bestimmt. [image: https://preview.redd.it/is-it-better-to-settle-on-the-river-or-settle-on-the-ocean-v0-7j3moi25bomc1.png?width=2348&format=png&auto=webp&s=91312347788f8f96080e72f55aab9d03261f2f21]
+ANSWER: B
