@@ -91,6 +91,9 @@
         .quiz-card { background-color: rgba(0, 0, 0, 0.7); border: 1px solid cyan; padding: 1rem; border-radius: 0.5rem; }
         .option-label { display: flex; align-items: center; gap: 0.5rem; }
         .option-img { width: 50px; height: 50px; object-fit: cover; border-radius: 0.25rem; }
+
+        /* New Old Earth Schemes Styles */
+        .simulation-card { background-color: rgba(0, 0, 0, 0.7); border: 1px solid cyan; padding: 1rem; border-radius: 0.5rem; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -112,6 +115,7 @@
             <button id="sos-button" class="action-button bg-red-700/60">Send SOS Signal 🆘</button>
             <button id="reset-button" class="action-button bg-gray-500/60">Spiel zurücksetzen</button>
             <button id="open-quiz" class="action-button bg-blue-600/60">Quiz starten ❓</button>
+            <button id="open-old-earth" class="action-button bg-indigo-600/60">Old Earth Schemes 🌍</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -274,6 +278,47 @@
             <div id="quiz-feedback" class="mt-4 text-cyan-400"></div>
         </div>
 
+        <!-- New Old Earth Schemes Section -->
+        <div id="old-earth-section" class="simulation-card mb-8 hidden">
+            <h2 class="text-3xl font-orbitron mb-6 text-center text-indigo-400">Old Earth Schemes 🌍</h2>
+            <p class="text-center mb-4 text-cyan-400">Simuliere Szenarien der Alten Erde, um Lektionen für die Mars-Kolonie zu lernen.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- First Simulation -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4">Simulation 1: USP</h3>
+                        <p class="text-gray-600 mb-4 text-sm">This is the first embedded simulation from the 'USP' repository.</p>
+                    </div>
+                    <div class="w-full bg-gray-200">
+                        <iframe 
+                            src="https://rosary-mom.github.io/USP/simulations/super-simulation.html" 
+                            title="USP Simulation" 
+                            frameborder="0" 
+                            class="w-full h-[600px]"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Second Simulation -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4">Simulation 2: Codespaces-Jupyter</h3>
+                         <p class="text-gray-600 mb-4 text-sm">This is the second embedded simulation from the 'codespaces-jupyter' repository.</p>
+                    </div>
+                    <div class="w-full bg-gray-200">
+                        <iframe 
+                            src="https://rosary-mom.github.io/codespaces-jupyter/simulations/super-simulation.html" 
+                            title="Codespaces-Jupyter Simulation" 
+                            frameborder="0" 
+                            class="w-full h-600px]"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <p class="mt-8 text-sm text-center text-gray-500">©®™ ROSARY 2025 ff | Be a SuperHero! -"CHIMMY" 🦸‍♂️</p>
     </div>
     
@@ -283,6 +328,7 @@
         <h3 class="text-lg font-orbitron text-center mb-2 text-pink-400">XAI Chatbot Log</h3>
         <div id="chat-messages" class="mb-2">
              <p class="bot-msg">Willkommen, Kommandant. Ich bin der XAI Chatbot, bereit für Anfragen. Wie kann ich die Ermittlung unterstützen?</p>
+             <p class="bot-msg">Lol, wusstest du, dass Portugal als EU-Land den ARTEMIS-Vertrag unterzeichnet hat, um Frieden auf dem Mond, dem Mars und im weiteren Universum zu sichern? 🚀🇵🇹</p>
         </div>
         <input type="text" id="chat-input" placeholder="Ihre Frage/Anregung..." class="w-full">
         <button id="send-chat" class="action-button w-full mt-2 bg-pink-700/60">Senden</button>
@@ -652,6 +698,12 @@
             document.getElementById('quiz-feedback').textContent = feedback + ' ' + apiFeedback;
             currentQuizIndex = (currentQuizIndex + 1) % quizzes.length;
             loadQuiz();
+        });
+
+        // New Old Earth Schemes Toggle
+        document.getElementById('open-old-earth').addEventListener('click', () => {
+            document.getElementById('old-earth-section').classList.toggle('hidden');
+            addLog('Old Earth Schemes aktiviert: Simuliere Szenarien der Alten Erde. 🌍');
         });
 
         // Initialisierung
